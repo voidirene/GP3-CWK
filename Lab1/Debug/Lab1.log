@@ -1,0 +1,25 @@
+﻿  Game.cpp
+C:\Projects\GP3-CWK\Lab1\Camera.h(92,28): warning C4244: '+=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Projects\GP3-CWK\Lab1\Camera.h(97,28): warning C4244: '+=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Projects\GP3-CWK\Lab1\Camera.h(102,28): warning C4244: '+=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Projects\GP3-CWK\Lab1\Game.cpp(207,46): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Projects\GP3-CWK\Lab1\Game.cpp(239,43): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Projects\GP3-CWK\Lab1\Game.cpp(243,44): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Projects\GP3-CWK\Lab1\Game.cpp(247,45): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Projects\GP3-CWK\Lab1\Game.cpp(251,46): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Projects\GP3-CWK\Lab1\Game.cpp(255,33): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Projects\GP3-CWK\Lab1\Game.cpp(259,34): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Projects\GP3-CWK\Lab1\Game.cpp(338,71): warning C4305: 'argument': truncation from 'double' to 'float'
+  Lab1.vcxproj -> C:\Projects\GP3-CWK\Debug\Labs.exe
