@@ -64,9 +64,9 @@ void Mesh::InitializeModel(const IndexedModel& model)
 	glBindVertexArray(0); //unbinds the vertex array
 }
 
-void Mesh::Display(float movementX, float movementY, float movementZ, float rotationX, float rotationY, float rotationZ, float scaleChange, Camera camera)
+void Mesh::Display(glm::vec3 movement, glm::vec3 rotation, float scaleChange, Camera camera)
 {
-	UpdateTransformValues(movementX, movementY, movementZ, rotationX, rotationY, rotationZ, scaleChange);
+	UpdateTransformValues(movement, rotation, scaleChange);
 
 	glBindVertexArray(vao); //bind the vertex array
 	glDrawElements(GL_TRIANGLES, displayCount, GL_UNSIGNED_INT, 0); //display; mode, number of objects, type, const void *indices
@@ -75,10 +75,10 @@ void Mesh::Display(float movementX, float movementY, float movementZ, float rota
 	UpdateSphereData(*transform.GetPos(), 0.62f);
 }
 
-void Mesh::UpdateTransformValues(float movementX, float movementY, float movementZ, float rotationX, float rotationY, float rotationZ, float scaleChange)
+void Mesh::UpdateTransformValues(glm::vec3 movement, glm::vec3 rotation, float scaleChange)
 {
-	transform.SetPos(glm::vec3(movementX, movementY, movementZ));
-	transform.SetRot(glm::vec3(rotationX, rotationY, rotationZ));
+	transform.SetPos(movement);
+	transform.SetRot(rotation);
 	transform.SetScale(glm::vec3(scaleChange, scaleChange, scaleChange));
 }
 

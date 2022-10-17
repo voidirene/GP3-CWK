@@ -324,7 +324,7 @@ void Game::UpdateDisplay()
 	//geoshader.UpdateTransform(mesh1.transform, camera);
 	reflectionshader.UpdateTransform(mesh1.transform, camera);
 	texture.UseTexture(0);
-	mesh1.Display(-1.0, 0.0, 0.0, counter, 0.0, 0.0, 1.0, camera);
+	mesh1.Display(glm::vec3(-1.0, 0.0, 0.0), glm::vec3(counter, 0.0, 0.0), 1.0, camera);
 
 	geoshader.UseShader();
 	LinkGeoShaderData();
@@ -338,7 +338,7 @@ void Game::UpdateDisplay()
 	geoshader.UpdateTransform(mesh2.transform, camera);
 	//reflectionshader.UpdateTransform(mesh2.transform, camera);
 	texture.UseTexture(1);
-	mesh2.Display(0.0, sinf(counter) * 5, 0.0, 0.0, 0.0, 0.0, 0.1, camera);
+	mesh2.Display(glm::vec3(0.0, sinf(counter) * 5, 0.0), glm::vec3(0.0, 0.0, 0.0), 0.1, camera);
 
 	adsshader.UseShader();
 	LinkADSShaderData();
@@ -353,7 +353,7 @@ void Game::UpdateDisplay()
 	//reflectionshader.UpdateTransform(mesh3.transform, camera);
 	adsshader.UpdateTransform(mesh3.transform, camera);
 	texture.UseTexture(2);
-	mesh3.Display(3.0, 0.0, sinf(counter) * 3, 0.0, counter, 0.0, 1.0, camera);
+	mesh3.Display(glm::vec3(3.0, 0.0, sinf(counter) * 3), glm::vec3(0.0, counter, 0.0), 1.0, camera);
 
 	if (rotateCam)
 	{

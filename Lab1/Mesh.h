@@ -59,10 +59,10 @@ public:
 	Mesh();
 	~Mesh();
 
-	void Display(float movementX, float movementY, float movementZ, float rotationX, float rotationY, float rotationZ, float scaleChange, Camera camera);
+	void Display(glm::vec3 movement, glm::vec3 rotation, float scaleChange, Camera camera);
 	void LoadModel(const std::string& file); //for loading a model
 
-	void UpdateTransformValues(float movementX, float movementY, float movementZ, float rotationX, float rotationY, float rotationZ, float scaleChange);
+	void UpdateTransformValues(glm::vec3 movement, glm::vec3 rotation, float scaleChange);
 	void UpdateSphereData(glm::vec3 position, float radius);
 
 	unsigned int displayCount; //how many VAOs we want to display

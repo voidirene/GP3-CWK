@@ -64,8 +64,8 @@ private:
 	Uint64 deltaLast = 0;
 	float deltaTime = 0;
 
-	float cameraSpeed = 1000;
-	float meshSpeed = 1000;
+	float cameraSpeed = 5;
+	float meshSpeed = 5000;
 
 	float counter;
 
