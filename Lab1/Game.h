@@ -47,7 +47,6 @@ private:
 	Mesh mesh2;
 	Mesh mesh3;
 	Camera camera;
-	bool rotateCam = false;
 
 	Texturing texture;
 	Shading shader;
@@ -63,6 +62,7 @@ private:
 	Uint64 deltaNow = SDL_GetPerformanceCounter();
 	Uint64 deltaLast = 0;
 	float deltaTime = 0;
+	float deltaTimeSeconds = 0;
 
 	float cameraSpeed = 5;
 	float meshSpeed = 5000;

@@ -205,7 +205,7 @@ void Game::UpdateDelta()
 	deltaNow = SDL_GetPerformanceCounter();
 
 	deltaTime = (float)((deltaNow - deltaLast) / (float)SDL_GetPerformanceFrequency());
-	//TODO: deltatime application causes jittery movement?
+	deltaTimeSeconds = deltaTime * 0.001; //converts and stores deltaTime in seconds format
 	//TODO: update model movement using deltatime
 }
 
@@ -236,22 +236,32 @@ void Game::ProcessUserInputs()
 	}
 
 	//for keyboard camera movement
-	if (glfwGetKey(gameDisplay->window, GLFW_KEY_UP) == GLFW_PRESS)
+	if (glfwGetKey(gameDisplay->window, GLFW_KEY_W) == GLFW_PRESS)
 	{
 		camera.MoveCameraVertically(cameraSpeed * deltaTime);
 	}
-	if (glfwGetKey(gameDisplay->window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	if (glfwGetKey(gameDisplay->window, GLFW_KEY_S) == GLFW_PRESS)
 	{
 		camera.MoveCameraVertically(-cameraSpeed * deltaTime);
 	}
-	if (glfwGetKey(gameDisplay->window, GLFW_KEY_LEFT) == GLFW_PRESS)
+	if (glfwGetKey(gameDisplay->window, GLFW_KEY_A) == GLFW_PRESS)
 	{
 		camera.MoveCameraHorizontally(cameraSpeed * deltaTime);
 	}
-	if (glfwGetKey(gameDisplay->window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+	if (glfwGetKey(gameDisplay->window, GLFW_KEY_D) == GLFW_PRESS)
 	{
 		camera.MoveCameraHorizontally(-cameraSpeed * deltaTime);
 	}
+	//for rotating camera around a mesh
+	if (glfwGetKey(gameDisplay->window, GLFW_KEY_E) == GLFW_PRESS)
+	{
+		camera.RotateCameraAroundMesh(*mesh1.transform.GetPos(), cameraSpeed * deltaTime);
+	}
+	if (glfwGetKey(gameDisplay->window, GLFW_KEY_Q) == GLFW_PRESS)
+	{
+		camera.RotateCameraAroundMesh(*mesh1.transform.GetPos(), -cameraSpeed * deltaTime); //TODO: setup multiple mesh support
+	}
+	//for zooming camera in and out
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_EQUAL) == GLFW_PRESS)
 	{
 		camera.ZoomCamera(cameraSpeed * deltaTime);
@@ -285,17 +295,6 @@ void Game::ProcessUserInputs()
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_6) == GLFW_PRESS)
 	{
 		camera.PointCameraAtMesh(*mesh3.transform.GetPos());
-	}
-	//for rotating camera around a mesh
-	if (glfwGetKey(gameDisplay->window, GLFW_KEY_F) == GLFW_PRESS)
-	{
-		//camera.RotateCameraAroundMesh(*mesh1.transform.GetPos(), counter); //TODO: setup multiple mesh support
-
-		//TODO: setup cameraRotationAroundModel
-		if (rotateCam)
-			rotateCam = false;
-		else
-			rotateCam = true;
 	}
 
 	//camera mouse input
@@ -354,11 +353,6 @@ void Game::UpdateDisplay()
 	adsshader.UpdateTransform(mesh3.transform, camera);
 	texture.UseTexture(2);
 	mesh3.Display(glm::vec3(3.0, 0.0, sinf(counter) * 3), glm::vec3(0.0, counter, 0.0), 1.0, camera);
-
-	if (rotateCam)
-	{
-		camera.RotateCameraAroundMesh(*mesh1.transform.GetPos(), counter);
-	}
 
 	counter += 0.001f;
 

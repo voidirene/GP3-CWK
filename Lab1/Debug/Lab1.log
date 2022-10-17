@@ -1,5 +1,6 @@
 ﻿  Game.cpp
-C:\Projects\GP3-CWK\Lab1\Game.cpp(341,93): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Projects\GP3-CWK\Lab1\Game.cpp(208,31): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Projects\GP3-CWK\Lab1\Game.cpp(340,93): warning C4305: 'argument': truncation from 'double' to 'float'
   Main.cpp
   Mesh.cpp
   Shading.cpp

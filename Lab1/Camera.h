@@ -120,16 +120,18 @@ public:
 		forwardVector = glm::vec3(glm::normalize(meshPosition - cameraPosition));
 	}
 
-	void RotateCameraAroundMesh(glm::vec3 meshPosition, float angle)
+	void RotateCameraAroundMesh(glm::vec3 meshPosition, float direction)
 	{
 		//PointCameraAtMesh(meshPosition);
+		forwardVector = glm::vec3(glm::normalize(meshPosition - cameraPosition));
+		cameraPosition += glm::cross(upVector, forwardVector) * direction;
 
-		static const glm::vec3 UP(0.0f, 1.0f, 0.0f);
+		//static const glm::vec3 UP(0.0f, 1.0f, 0.0f);
 
-		glm::mat4 rotation = glm::rotate(angle, UP);
+		//glm::mat4 rotation = glm::rotate(angle, UP);
 
-		forwardVector = glm::vec3(glm::normalize(rotation * glm::vec4(forwardVector, 0.0)));
-		upVector = glm::vec3(glm::normalize(rotation * glm::vec4(upVector, 0.0)));
+		//forwardVector = glm::vec3(glm::normalize(rotation * glm::vec4(forwardVector, 0.0)));
+		//upVector = glm::vec3(glm::normalize(rotation * glm::vec4(upVector, 0.0)));
 	}
 
 	bool firstPress = true;
