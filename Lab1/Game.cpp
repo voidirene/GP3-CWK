@@ -253,13 +253,14 @@ void Game::ProcessUserInputs()
 		camera.MoveCameraHorizontally(-cameraSpeed * deltaTime);
 	}
 	//for rotating camera around a mesh
+	//TODO: setup multiple mesh support
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_E) == GLFW_PRESS)
 	{
-		camera.RotateCameraAroundMesh(*mesh1.transform.GetPos(), cameraSpeed * deltaTime);
+		camera.RotateCameraAroundMesh(*mesh3.transform.GetPos(), cameraSpeed * deltaTime);
 	}
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_Q) == GLFW_PRESS)
 	{
-		camera.RotateCameraAroundMesh(*mesh1.transform.GetPos(), -cameraSpeed * deltaTime); //TODO: setup multiple mesh support
+		camera.RotateCameraAroundMesh(*mesh3.transform.GetPos(), -cameraSpeed * deltaTime);
 	}
 	//for zooming camera in and out
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_EQUAL) == GLFW_PRESS)
