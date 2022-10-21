@@ -7,6 +7,21 @@ Game::Game() : cubemapTexture(0), skyboxVAO(0), skyboxVBO(0)
 	gameState = GameState::PLAYING; //set the game state to PLAYING
 	gameDisplay = new ScreenDisplay(); //create a new display
 
+	//construct shaders
+	Shading shader();
+	Shading fogshader();
+	Shading toonshader();
+	Shading rimshader();
+	Shading toonrimshader();
+	Shading geoshader();
+	Shading reflectionshader();
+	Shading adsshader();
+	Shading shaderSkybox();
+
+	//construct other gameobjects
+	GameObject asteroid();
+	//Audio* audioDevice();
+
 	counter = 0;
 }
 
@@ -56,6 +71,8 @@ void Game::InitializeSystems()
 
 	shaderSkybox.InitializeShader("..\\res\\SkyboxShader");
 	InitializeSkybox();
+
+	counter = 0.0f;
 }
 
 void Game::InitializeSkybox()
@@ -159,13 +176,13 @@ void Game::LinkToonShaderData()
 void Game::LinkRimLightingShaderData()
 {
 	rimshader.setVec3("lightDir", glm::vec3(0, 0, 3));
-	rimshader.setMat4("m", mesh1.getMM());
+	rimshader.setMat4("m", capsule.getMM());
 }
 
 void Game::LinkToonRimShaderData()
 {
 	toonrimshader.setVec3("lightDir", glm::vec3(0, 0, 3));
-	toonrimshader.setMat4("m", mesh1.getMM());
+	toonrimshader.setMat4("m", capsule.getMM());
 }
 
 void Game::LinkGeoShaderData()
@@ -184,7 +201,7 @@ void Game::LinkReflectionShaderData()
 	reflectionshader.setMat4("view", camera.GetView());
 	reflectionshader.setMat4("projection", camera.GetProjection());
 	reflectionshader.setVec3("cameraPos", camera.GetPosition());
-	reflectionshader.setMat4("model", mesh1.getMM()); //TODO: fix & remove some of these
+	reflectionshader.setMat4("model", capsule.getMM()); //TODO: fix & remove some of these
 	//reflectionshader.setMat4("model", mesh2.getMM());
 	//reflectionshader.setMat4("model", mesh3.getMM());
 }
@@ -193,7 +210,7 @@ void Game::LinkADSShaderData()
 {
 	adsshader.setMat4("view", camera.GetView());
 	adsshader.setMat4("projection", camera.GetProjection());
-	adsshader.setMat4("model", mesh3.getMM());
+	adsshader.setMat4("model", capsule.getMM());
 	adsshader.setVec3("lightPos", 0.5f, 2.0f, -3.0f);
 	adsshader.setVec3("viewPos", camera.GetPosition());
 	adsshader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
@@ -217,7 +234,7 @@ void Game::GameLoop()
 		ProcessUserInputs();
 		UpdateDisplay();
 
-		//DetectCollision(mesh1.boundingSphere.GetPosition(), mesh1.boundingSphere.GetRadius(), mesh2.boundingSphere.GetPosition(), mesh2.boundingSphere.GetRadius());
+		//DetectCollision(asteroid.boundingSphere.GetPosition(), asteroid.boundingSphere.GetRadius(), asteroid2.boundingSphere.GetPosition(), asteroid2.boundingSphere.GetRadius()); //TODO: setup after multiple mesh support
 		UpdateDelta();
 	}
 
@@ -256,11 +273,11 @@ void Game::ProcessUserInputs()
 	//TODO: setup multiple mesh support
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_E) == GLFW_PRESS)
 	{
-		camera.RotateCameraAroundMesh(*mesh3.transform.GetPos(), cameraSpeed * deltaTime);
+		camera.RotateCameraAroundMesh(*capsule.GetTransform().GetPos(), cameraSpeed * deltaTime);
 	}
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_Q) == GLFW_PRESS)
 	{
-		camera.RotateCameraAroundMesh(*mesh3.transform.GetPos(), -cameraSpeed * deltaTime);
+		camera.RotateCameraAroundMesh(*capsule.GetTransform().GetPos(), -cameraSpeed * deltaTime);
 	}
 	//for zooming camera in and out
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_EQUAL) == GLFW_PRESS)
@@ -271,31 +288,31 @@ void Game::ProcessUserInputs()
 	{
 		camera.ZoomCamera(-cameraSpeed * deltaTime);
 	}
-	//for centering camera on a mesh
+	//for centering camera on a mesh //TODO: rebind to different models
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_1) == GLFW_PRESS)
 	{
-		camera.CenterCameraOnMesh(*mesh1.transform.GetPos(), -5);
+		camera.CenterCameraOnMesh(*capsule.GetTransform().GetPos(), -5);
 	}
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_2) == GLFW_PRESS)
 	{
-		camera.CenterCameraOnMesh(*mesh2.transform.GetPos(), -10);
+		camera.CenterCameraOnMesh(*capsule.GetTransform().GetPos(), -10);
 	}
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_3) == GLFW_PRESS)
 	{
-		camera.CenterCameraOnMesh(*mesh3.transform.GetPos(), -15);
+		camera.CenterCameraOnMesh(*capsule.GetTransform().GetPos(), -15);
 	}
-	//for pointing camera at a mesh
+	//for pointing camera at a mesh //TODO: rebind to different models
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_4) == GLFW_PRESS)
 	{
-		camera.PointCameraAtMesh(*mesh1.transform.GetPos());
+		camera.PointCameraAtMesh(*capsule.GetTransform().GetPos());
 	}
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_5) == GLFW_PRESS)
 	{
-		camera.PointCameraAtMesh(*mesh2.transform.GetPos());
+		camera.PointCameraAtMesh(*capsule.GetTransform().GetPos());
 	}
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_6) == GLFW_PRESS)
 	{
-		camera.PointCameraAtMesh(*mesh3.transform.GetPos());
+		camera.PointCameraAtMesh(*capsule.GetTransform().GetPos());
 	}
 
 	//camera mouse input
@@ -322,9 +339,12 @@ void Game::UpdateDisplay()
 	//rimshader.UpdateTransform(mesh1.transform, camera);
 	//toonrimshader.UpdateTransform(mesh1.transform, camera);
 	//geoshader.UpdateTransform(mesh1.transform, camera);
-	reflectionshader.UpdateTransform(mesh1.transform, camera);
+	reflectionshader.UpdateTransform(capsule.GetTransform(), camera);
 	texture.UseTexture(0);
-	mesh1.Display(glm::vec3(-1.0, 0.0, 0.0), glm::vec3(counter, 0.0, 0.0), 1.0, camera);
+	//mesh1.Display(glm::vec3(-1.0, 0.0, 0.0), glm::vec3(counter, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0));
+
+	//asteroid.DisplayMesh(&mesh1);
+	//asteroid.SetTransformParameters(glm::vec3(-1.0, 0.0, 0.0), glm::vec3(counter, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0));
 
 	geoshader.UseShader();
 	LinkGeoShaderData();
@@ -335,10 +355,13 @@ void Game::UpdateDisplay()
 	//toonshader.UpdateTransform(mesh2.transform, camera);
 	//rimshader.UpdateTransform(mesh2.transform, camera);
 	//toonrimshader.UpdateTransform(mesh2.transform, camera);
-	geoshader.UpdateTransform(mesh2.transform, camera);
+	geoshader.UpdateTransform(capsule.GetTransform(), camera);
 	//reflectionshader.UpdateTransform(mesh2.transform, camera);
 	texture.UseTexture(1);
-	mesh2.Display(glm::vec3(0.0, sinf(counter) * 5, 0.0), glm::vec3(0.0, 0.0, 0.0), 0.1, camera);
+	//mesh2.Display(glm::vec3(0.0, sinf(counter) * 5, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.1, 0.1, 0.1));
+
+	//asteroid.DisplayMesh(&mesh2);
+	//asteroid.SetTransformParameters(glm::vec3(0.0, sinf(counter) * 5, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.1, 0.1, 0.1));
 
 	adsshader.UseShader();
 	LinkADSShaderData();
@@ -351,9 +374,10 @@ void Game::UpdateDisplay()
 	//toonrimshader.UpdateTransform(mesh3.transform, camera);
 	//geoshader.UpdateTransform(mesh3.transform, camera);
 	//reflectionshader.UpdateTransform(mesh3.transform, camera);
-	adsshader.UpdateTransform(mesh3.transform, camera);
+	adsshader.UpdateTransform(capsule.GetTransform(), camera);
 	texture.UseTexture(2);
-	mesh3.Display(glm::vec3(3.0, 0.0, sinf(counter) * 3), glm::vec3(0.0, counter, 0.0), 1.0, camera);
+	capsule.SetTransformParameters(glm::vec3(3.0, 0.0, sinf(counter) * 3), glm::vec3(0.0, counter, 0.0), glm::vec3(1.0, 1.0, 1.0));
+	capsule.DisplayMesh(&mesh3);
 
 	counter += 0.001f;
 

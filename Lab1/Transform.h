@@ -24,8 +24,8 @@ public:
 	inline glm::vec3* GetPos() { return &pos; } //getters
 	inline glm::vec3* GetRot() { return &rot; }
 	inline glm::vec3* GetScale() { return &scale; }
-	inline void SetPos(glm::vec3& pos) { this->pos = pos; } // setters
-	inline void SetRot(glm::vec3& rot) { this->rot = rot; }
+	inline void SetPosition(glm::vec3& pos) { this->pos = pos; } // setters
+	inline void SetRotation(glm::vec3& rot) { this->rot = rot; }
 	inline void SetScale(glm::vec3& scale) { this->scale = scale; }
 
 protected:

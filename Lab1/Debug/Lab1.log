@@ -1,4 +1,17 @@
 ﻿  Game.cpp
-C:\Projects\GP3-CWK\Lab1\Game.cpp(208,31): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Projects\GP3-CWK\Lab1\Game.cpp(341,93): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Projects\GP3-CWK\Lab1\Game.cpp(19,10): warning C4930: 'Shading shaderSkybox(void)': prototyped function not called (was a variable definition intended?)
+C:\Projects\GP3-CWK\Lab1\Game.cpp(16,10): warning C4930: 'Shading geoshader(void)': prototyped function not called (was a variable definition intended?)
+C:\Projects\GP3-CWK\Lab1\Game.cpp(13,10): warning C4930: 'Shading toonshader(void)': prototyped function not called (was a variable definition intended?)
+C:\Projects\GP3-CWK\Lab1\Game.cpp(12,10): warning C4930: 'Shading fogshader(void)': prototyped function not called (was a variable definition intended?)
+C:\Projects\GP3-CWK\Lab1\Game.cpp(17,10): warning C4930: 'Shading reflectionshader(void)': prototyped function not called (was a variable definition intended?)
+C:\Projects\GP3-CWK\Lab1\Game.cpp(14,10): warning C4930: 'Shading rimshader(void)': prototyped function not called (was a variable definition intended?)
+C:\Projects\GP3-CWK\Lab1\Game.cpp(11,10): warning C4930: 'Shading shader(void)': prototyped function not called (was a variable definition intended?)
+C:\Projects\GP3-CWK\Lab1\Game.cpp(18,10): warning C4930: 'Shading adsshader(void)': prototyped function not called (was a variable definition intended?)
+C:\Projects\GP3-CWK\Lab1\Game.cpp(15,10): warning C4930: 'Shading toonrimshader(void)': prototyped function not called (was a variable definition intended?)
+C:\Projects\GP3-CWK\Lab1\Game.cpp(22,13): warning C4930: 'GameObject asteroid(void)': prototyped function not called (was a variable definition intended?)
+C:\Projects\GP3-CWK\Lab1\Game.cpp(225,31): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  GameObject.cpp
+  Main.cpp
+  Mesh.cpp
+  Generating Code...
   Lab1.vcxproj -> C:\Projects\GP3-CWK\Debug\Labs.exe

@@ -4,6 +4,7 @@
 #include <glfw3.h>
 #include "ScreenDisplay.h"
 #include "Audio.h"
+#include "GameObject.h"
 #include "Mesh.h"
 #include "Shading.h"
 #include "Texturing.h"
@@ -45,7 +46,7 @@ private:
 
 	Mesh mesh1;
 	Mesh mesh2;
-	Mesh mesh3;
+	GameObject capsule;
 	Camera camera;
 
 	Texturing texture;

@@ -3,7 +3,6 @@
 #include <GL\glew.h>
 #include "obj_loader.h"
 #include <string>
-#include "Transform.h"
 #include "Texturing.h"
 #include "Shading.h"
 
@@ -28,30 +27,6 @@ private:
 	glm::vec3 normal;
 };
 
-struct BoundingSphere //for collision detection
-{
-public:
-
-	BoundingSphere()
-	{
-
-	}
-
-	void UpdateSphereData(glm::vec3 position, float radius)
-	{
-		this->position = position;
-		this->radius = radius;
-	}
-
-	glm::vec3 GetPosition() { return position; }
-	float GetRadius() { return radius; }
-
-private:
-
-	float radius;
-	glm::vec3 position;
-};
-
 class Mesh
 {
 public:
@@ -59,18 +34,10 @@ public:
 	Mesh();
 	~Mesh();
 
-	void Display(glm::vec3 movement, glm::vec3 rotation, float scaleChange, Camera camera);
+	void Display();
 	void LoadModel(const std::string& file); //for loading a model
 
-	void UpdateTransformValues(glm::vec3 movement, glm::vec3 rotation, float scaleChange);
-	void UpdateSphereData(glm::vec3 position, float radius);
-
 	unsigned int displayCount; //how many VAOs we want to display
-
-	Transform transform;
-	BoundingSphere boundingSphere;
-
-	glm::mat4 getMM() { return transform.GetModel(); }
 
 private:
 
