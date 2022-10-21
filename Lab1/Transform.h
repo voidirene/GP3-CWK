@@ -21,8 +21,8 @@ public:
 		glm::mat4 rotMat = rotX * rotY * rotZ;
 		return posMat * rotMat * scaleMat;
 	}
-	inline glm::vec3* GetPos() { return &pos; } //getters
-	inline glm::vec3* GetRot() { return &rot; }
+	inline glm::vec3* GetPosition() { return &pos; } //getters
+	inline glm::vec3* GetRotation() { return &rot; }
 	inline glm::vec3* GetScale() { return &scale; }
 	inline void SetPosition(glm::vec3& pos) { this->pos = pos; } // setters
 	inline void SetRotation(glm::vec3& rot) { this->rot = rot; }

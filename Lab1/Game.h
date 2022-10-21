@@ -5,7 +5,6 @@
 #include "ScreenDisplay.h"
 #include "Audio.h"
 #include "GameObject.h"
-#include "Mesh.h"
 #include "Shading.h"
 #include "Texturing.h"
 #include <string>
@@ -44,8 +43,8 @@ private:
 	GameState gameState; //Variable holding a reference to the current game state
 	ScreenDisplay* gameDisplay; //Variable holding a pointer to the game's screen display
 
-	Mesh mesh1;
-	Mesh mesh2;
+	GameObject monkey;
+	GameObject teapot;
 	GameObject capsule;
 	Camera camera;
 
@@ -66,7 +65,7 @@ private:
 	float deltaTimeSeconds = 0;
 
 	float cameraSpeed = 5;
-	float meshSpeed = 5000;
+	float meshSpeed = 10;
 
 	float counter;
 

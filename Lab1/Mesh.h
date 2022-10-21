@@ -35,7 +35,7 @@ public:
 	~Mesh();
 
 	void Display();
-	void LoadModel(const std::string& file); //for loading a model
+	void LoadMesh(const std::string& file); //for loading a model
 
 	unsigned int displayCount; //how many VAOs we want to display
 

@@ -11,7 +11,7 @@ Mesh::~Mesh()
 	glDeleteVertexArrays(1, &vao); //delete the vertex array
 }
 
-void Mesh::LoadModel(const std::string& file)
+void Mesh::LoadMesh(const std::string& file)
 {
 	IndexedModel model = OBJModel(file).ToIndexedModel(); //loads a model from file
 	InitializeModel(model); //initialize the model

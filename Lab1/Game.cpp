@@ -8,18 +8,18 @@ Game::Game() : cubemapTexture(0), skyboxVAO(0), skyboxVBO(0)
 	gameDisplay = new ScreenDisplay(); //create a new display
 
 	//construct shaders
-	Shading shader();
-	Shading fogshader();
-	Shading toonshader();
-	Shading rimshader();
-	Shading toonrimshader();
-	Shading geoshader();
-	Shading reflectionshader();
-	Shading adsshader();
-	Shading shaderSkybox();
+	//Shading shader();
+	//Shading fogshader();
+	//Shading toonshader();
+	//Shading rimshader();
+	//Shading toonrimshader();
+	//Shading geoshader();
+	//Shading reflectionshader();
+	//Shading adsshader();
+	//Shading shaderSkybox();
 
 	//construct other gameobjects
-	GameObject asteroid();
+	//GameObject monkey();
 	//Audio* audioDevice();
 
 	counter = 0;
@@ -47,9 +47,9 @@ void Game::InitializeSystems()
 {
 	gameDisplay->InitializeDisplay(); //initializes the game display
 
-	mesh1.LoadModel("..\\res\\monkey3.obj"); //loads a mesh from file
-	mesh2.LoadModel("..\\res\\teapot.obj");
-	mesh3.LoadModel("..\\res\\capsule.obj");
+	monkey.LoadModel("..\\res\\monkey3.obj"); //loads a mesh from file
+	teapot.LoadModel("..\\res\\teapot.obj");
+	capsule.LoadModel("..\\res\\capsule.obj");
 
 	shader.InitializeShader("..\\res\\shader"); //create a new shader
 	fogshader.InitializeShader("..\\res\\FogShader");
@@ -161,7 +161,9 @@ void Game::DisplaySkybox()
 	glDepthFunc(GL_LESS); // set depth function back to default
 }
 
-void Game::LinkFogShaderData() //TODO: combine these methods?
+//TODO: setup multiple mesh support (RimLight, RimShade, Reflect, ADS)
+//TODO: combine these methods?
+void Game::LinkFogShaderData()
 {
 	fogshader.setVec3("fogColor", glm::vec3(0.2, 0.2, 0.2));
 	fogshader.setFloat("minDist", -5.0f);
@@ -176,13 +178,13 @@ void Game::LinkToonShaderData()
 void Game::LinkRimLightingShaderData()
 {
 	rimshader.setVec3("lightDir", glm::vec3(0, 0, 3));
-	rimshader.setMat4("m", capsule.getMM());
+	rimshader.setMat4("m", capsule.GetModelMatrix());
 }
 
 void Game::LinkToonRimShaderData()
 {
 	toonrimshader.setVec3("lightDir", glm::vec3(0, 0, 3));
-	toonrimshader.setMat4("m", capsule.getMM());
+	toonrimshader.setMat4("m", capsule.GetModelMatrix());
 }
 
 void Game::LinkGeoShaderData()
@@ -201,16 +203,14 @@ void Game::LinkReflectionShaderData()
 	reflectionshader.setMat4("view", camera.GetView());
 	reflectionshader.setMat4("projection", camera.GetProjection());
 	reflectionshader.setVec3("cameraPos", camera.GetPosition());
-	reflectionshader.setMat4("model", capsule.getMM()); //TODO: fix & remove some of these
-	//reflectionshader.setMat4("model", mesh2.getMM());
-	//reflectionshader.setMat4("model", mesh3.getMM());
+	reflectionshader.setMat4("model", monkey.GetModelMatrix());
 }
 
 void Game::LinkADSShaderData()
 {
 	adsshader.setMat4("view", camera.GetView());
 	adsshader.setMat4("projection", camera.GetProjection());
-	adsshader.setMat4("model", capsule.getMM());
+	adsshader.setMat4("model", capsule.GetModelMatrix());
 	adsshader.setVec3("lightPos", 0.5f, 2.0f, -3.0f);
 	adsshader.setVec3("viewPos", camera.GetPosition());
 	adsshader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
@@ -234,7 +234,7 @@ void Game::GameLoop()
 		ProcessUserInputs();
 		UpdateDisplay();
 
-		//DetectCollision(asteroid.boundingSphere.GetPosition(), asteroid.boundingSphere.GetRadius(), asteroid2.boundingSphere.GetPosition(), asteroid2.boundingSphere.GetRadius()); //TODO: setup after multiple mesh support
+		DetectCollision(monkey.boundingSphere.GetPosition(), monkey.boundingSphere.GetRadius(), teapot.boundingSphere.GetPosition(), teapot.boundingSphere.GetRadius());
 		UpdateDelta();
 	}
 
@@ -273,11 +273,11 @@ void Game::ProcessUserInputs()
 	//TODO: setup multiple mesh support
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_E) == GLFW_PRESS)
 	{
-		camera.RotateCameraAroundMesh(*capsule.GetTransform().GetPos(), cameraSpeed * deltaTime);
+		camera.RotateCameraAroundMesh(*capsule.GetTransform().GetPosition(), cameraSpeed * deltaTime);
 	}
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_Q) == GLFW_PRESS)
 	{
-		camera.RotateCameraAroundMesh(*capsule.GetTransform().GetPos(), -cameraSpeed * deltaTime);
+		camera.RotateCameraAroundMesh(*capsule.GetTransform().GetPosition(), -cameraSpeed * deltaTime);
 	}
 	//for zooming camera in and out
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_EQUAL) == GLFW_PRESS)
@@ -288,31 +288,31 @@ void Game::ProcessUserInputs()
 	{
 		camera.ZoomCamera(-cameraSpeed * deltaTime);
 	}
-	//for centering camera on a mesh //TODO: rebind to different models
+	//for centering camera on a mesh
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_1) == GLFW_PRESS)
 	{
-		camera.CenterCameraOnMesh(*capsule.GetTransform().GetPos(), -5);
+		camera.CenterCameraOnMesh(*monkey.GetTransform().GetPosition(), -5);
 	}
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_2) == GLFW_PRESS)
 	{
-		camera.CenterCameraOnMesh(*capsule.GetTransform().GetPos(), -10);
+		camera.CenterCameraOnMesh(*teapot.GetTransform().GetPosition(), -10);
 	}
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_3) == GLFW_PRESS)
 	{
-		camera.CenterCameraOnMesh(*capsule.GetTransform().GetPos(), -15);
+		camera.CenterCameraOnMesh(*capsule.GetTransform().GetPosition(), -15);
 	}
-	//for pointing camera at a mesh //TODO: rebind to different models
+	//for pointing camera at a mesh
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_4) == GLFW_PRESS)
 	{
-		camera.PointCameraAtMesh(*capsule.GetTransform().GetPos());
+		camera.PointCameraAtMesh(*monkey.GetTransform().GetPosition());
 	}
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_5) == GLFW_PRESS)
 	{
-		camera.PointCameraAtMesh(*capsule.GetTransform().GetPos());
+		camera.PointCameraAtMesh(*teapot.GetTransform().GetPosition());
 	}
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_6) == GLFW_PRESS)
 	{
-		camera.PointCameraAtMesh(*capsule.GetTransform().GetPos());
+		camera.PointCameraAtMesh(*capsule.GetTransform().GetPosition());
 	}
 
 	//camera mouse input
@@ -339,12 +339,10 @@ void Game::UpdateDisplay()
 	//rimshader.UpdateTransform(mesh1.transform, camera);
 	//toonrimshader.UpdateTransform(mesh1.transform, camera);
 	//geoshader.UpdateTransform(mesh1.transform, camera);
-	reflectionshader.UpdateTransform(capsule.GetTransform(), camera);
+	reflectionshader.UpdateTransform(monkey.GetTransform(), camera);
 	texture.UseTexture(0);
-	//mesh1.Display(glm::vec3(-1.0, 0.0, 0.0), glm::vec3(counter, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0));
-
-	//asteroid.DisplayMesh(&mesh1);
-	//asteroid.SetTransformParameters(glm::vec3(-1.0, 0.0, 0.0), glm::vec3(counter, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0));
+	monkey.SetTransformParameters(glm::vec3(-1.0, 0.0, 0.0), glm::vec3(counter, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0));
+	monkey.DisplayMesh();
 
 	geoshader.UseShader();
 	LinkGeoShaderData();
@@ -355,13 +353,11 @@ void Game::UpdateDisplay()
 	//toonshader.UpdateTransform(mesh2.transform, camera);
 	//rimshader.UpdateTransform(mesh2.transform, camera);
 	//toonrimshader.UpdateTransform(mesh2.transform, camera);
-	geoshader.UpdateTransform(capsule.GetTransform(), camera);
+	geoshader.UpdateTransform(teapot.GetTransform(), camera);
 	//reflectionshader.UpdateTransform(mesh2.transform, camera);
 	texture.UseTexture(1);
-	//mesh2.Display(glm::vec3(0.0, sinf(counter) * 5, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.1, 0.1, 0.1));
-
-	//asteroid.DisplayMesh(&mesh2);
-	//asteroid.SetTransformParameters(glm::vec3(0.0, sinf(counter) * 5, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.1, 0.1, 0.1));
+	teapot.SetTransformParameters(glm::vec3(0.0, sinf(counter) * 5, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.1, 0.1, 0.1));
+	teapot.DisplayMesh();
 
 	adsshader.UseShader();
 	LinkADSShaderData();
@@ -377,7 +373,7 @@ void Game::UpdateDisplay()
 	adsshader.UpdateTransform(capsule.GetTransform(), camera);
 	texture.UseTexture(2);
 	capsule.SetTransformParameters(glm::vec3(3.0, 0.0, sinf(counter) * 3), glm::vec3(0.0, counter, 0.0), glm::vec3(1.0, 1.0, 1.0));
-	capsule.DisplayMesh(&mesh3);
+	capsule.DisplayMesh();
 
 	counter += 0.001f;
 
