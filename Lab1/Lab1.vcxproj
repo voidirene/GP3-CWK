@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClInclude Include="Audio.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="FBO.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Mesh.h" />
@@ -25,6 +26,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Audio.cpp" />
+    <ClCompile Include="FBO.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -38,6 +40,8 @@
   <ItemGroup>
     <None Include="..\res\ADSshader.frag" />
     <None Include="..\res\ADSshader.vert" />
+    <None Include="..\res\FBOShader.frag" />
+    <None Include="..\res\FBOShader.vert" />
     <None Include="..\res\FogShader.frag" />
     <None Include="..\res\FogShader.vert" />
     <None Include="..\res\RimLightingShader.frag" />

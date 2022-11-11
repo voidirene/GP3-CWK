@@ -3,6 +3,7 @@
 #include <GL\glew.h>
 #include <glfw3.h>
 #include "ScreenDisplay.h"
+#include "FBO.h"
 #include "Audio.h"
 #include "GameObject.h"
 #include "Shading.h"
@@ -16,6 +17,7 @@ enum class GameState { PLAYING, QUITTING };
 class Game
 {
 public:
+
 	Game();
 	~Game();
 
@@ -47,6 +49,7 @@ private:
 	GameObject teapot;
 	GameObject capsule;
 	Camera camera;
+	FBO fbo;
 
 	Texturing texture;
 	Shading shader;
@@ -57,6 +60,7 @@ private:
 	Shading geoshader;
 	Shading reflectionshader;
 	Shading adsshader;
+	//Shading fboshader;
 	Audio audio;
 
 	Uint64 deltaNow = SDL_GetPerformanceCounter();

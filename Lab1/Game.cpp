@@ -59,12 +59,14 @@ void Game::InitializeSystems()
 	geoshader.InitializeGeoShader("..\\res\\shaderGeoText");
 	reflectionshader.InitializeShader("..\\res\\shaderReflection");
 	adsshader.InitializeShader("..\\res\\ADSshader");
+	//fboshader.InitializeShader("..\\res\\FBOShader");
 
 	texture.InitializeTexture("..\\res\\bricks.jpg"); //load a texture
 	texture.InitializeTexture("..\\res\\water.jpg");
 	texture.InitializeTexture("..\\res\\grass.jpg");
 
 	camera.InitializeCamera(glm::vec3(0, 0, -5), 70.0f, (float) gameDisplay->GetWidth() / gameDisplay->GetHeight(), 0.01f, 1000.0f); //initializes the camera
+	fbo.GenerateFBO(gameDisplay->GetWidth(), gameDisplay->GetHeight());
 
 	audio.AddNewSound("..\\res\\bang.wav");
 	audio.AddNewBackgroundMusic("..\\res\\background.wav");
@@ -322,6 +324,7 @@ void Game::ProcessUserInputs()
 void Game::UpdateDisplay()
 {
 	gameDisplay->ClearDisplay(0.0f, 0.0f, 0.0f, 1.0f); //clear the display
+	fbo.BindFBO();
 
 	//shader.UseShader();
 	//fogshader.UseShader();
@@ -382,6 +385,9 @@ void Game::UpdateDisplay()
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnd();
 
+	fbo.UnbindFBO();
+	fbo.GenerateQuad();
+	fbo.RenderFBOtoQuad();
 	gameDisplay->ChangeBuffer(); //swap the buffers
 }
 
