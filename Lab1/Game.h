@@ -60,7 +60,9 @@ private:
 	Shading geoshader;
 	Shading reflectionshader;
 	Shading adsshader;
-	//Shading fboshader;
+	Shading fboshader;
+	Shading fbograyscaleshader;
+	Shading fboinversionshader;
 	Audio audio;
 
 	Uint64 deltaNow = SDL_GetPerformanceCounter();

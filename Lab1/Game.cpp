@@ -59,7 +59,9 @@ void Game::InitializeSystems()
 	geoshader.InitializeGeoShader("..\\res\\shaderGeoText");
 	reflectionshader.InitializeShader("..\\res\\shaderReflection");
 	adsshader.InitializeShader("..\\res\\ADSshader");
-	//fboshader.InitializeShader("..\\res\\FBOShader");
+	fboshader.InitializeShader("..\\res\\FBOShader");
+	fbograyscaleshader.InitializeShader("..\\res\\FBOGrayscaleShader");
+	fboinversionshader.InitializeShader("..\\res\\FBOInversionShader");
 
 	texture.InitializeTexture("..\\res\\bricks.jpg"); //load a texture
 	texture.InitializeTexture("..\\res\\water.jpg");
@@ -67,6 +69,7 @@ void Game::InitializeSystems()
 
 	camera.InitializeCamera(glm::vec3(0, 0, -5), 70.0f, (float) gameDisplay->GetWidth() / gameDisplay->GetHeight(), 0.01f, 1000.0f); //initializes the camera
 	fbo.GenerateFBO(gameDisplay->GetWidth(), gameDisplay->GetHeight());
+	fbo.GenerateQuad();
 
 	audio.AddNewSound("..\\res\\bang.wav");
 	audio.AddNewBackgroundMusic("..\\res\\background.wav");
@@ -323,8 +326,8 @@ void Game::ProcessUserInputs()
 
 void Game::UpdateDisplay()
 {
-	gameDisplay->ClearDisplay(0.0f, 0.0f, 0.0f, 1.0f); //clear the display
 	fbo.BindFBO();
+	gameDisplay->ClearDisplay(0.0f, 0.0f, 0.0f, 1.0f); //clear the display
 
 	//shader.UseShader();
 	//fogshader.UseShader();
@@ -342,7 +345,8 @@ void Game::UpdateDisplay()
 	//rimshader.UpdateTransform(mesh1.transform, camera);
 	//toonrimshader.UpdateTransform(mesh1.transform, camera);
 	//geoshader.UpdateTransform(mesh1.transform, camera);
-	reflectionshader.UpdateTransform(monkey.GetTransform(), camera);
+	//reflectionshader.UpdateTransform(monkey.GetTransform(), camera);
+	fbograyscaleshader.UpdateTransform(monkey.GetTransform(), camera);
 	texture.UseTexture(0);
 	monkey.SetTransformParameters(glm::vec3(-1.0, 0.0, 0.0), glm::vec3(counter, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0));
 	monkey.DisplayMesh();
@@ -386,7 +390,7 @@ void Game::UpdateDisplay()
 	glEnd();
 
 	fbo.UnbindFBO();
-	fbo.GenerateQuad();
+	fboinversionshader.UseShader();
 	fbo.RenderFBOtoQuad();
 	gameDisplay->ChangeBuffer(); //swap the buffers
 }

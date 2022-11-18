@@ -22,7 +22,7 @@ void FBO::GenerateFBO(int width, int height)
 
 	// now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
-		cout << "FRAMEBUFFER:: Framebuffer is complete!" << '\n';
+		std::cout << "FRAMEBUFFER:: Framebuffer is complete!" << '\n';
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -50,6 +50,14 @@ void FBO::GenerateQuad()
 		-1.0f,  1.0f,  0.0f, 1.0f,
 		 1.0f, -1.0f,  1.0f, 0.0f,
 		 1.0f,  1.0f,  1.0f, 1.0f
+
+		//- 0.3f,  1.0f,  0.0f, 1.0f,
+		//-0.3f,  0.7f,  0.0f, 0.0f,
+		// 0.3f,  0.7f,  1.0f, 0.0f,
+
+		//-0.3f,  1.0f,  0.0f, 1.0f,
+		// 0.3f,  0.7f,  1.0f, 0.0f,
+		// 0.3f,  1.0f,  1.0f, 1.0f
 	};
 
 	// cube VAO
@@ -63,8 +71,6 @@ void FBO::GenerateQuad()
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-
-	FBOShader.InitializeShader("..\\res\\FBOShader");
 }
 
 void FBO::RenderFBOtoQuad()
@@ -73,7 +79,6 @@ void FBO::RenderFBOtoQuad()
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // set clear color to white (not really necessary actually, since we won't be able to see behind the quad anyways)
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	FBOShader.UseShader();
 	glBindVertexArray(quadVAO);
 	glBindTexture(GL_TEXTURE_2D, CBO);	// use the color attachment texture as the texture of the quad plane
 	glDrawArrays(GL_TRIANGLES, 0, 6);

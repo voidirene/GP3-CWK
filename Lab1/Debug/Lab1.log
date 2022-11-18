@@ -1,5 +1,5 @@
 ﻿  Game.cpp
-C:\Projects\GP3-CWK\Lab1\Game.cpp(69,65): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Projects\GP3-CWK\Lab1\Game.cpp(69,39): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Projects\GP3-CWK\Lab1\Game.cpp(227,31): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Projects\GP3-CWK\Lab1\Game.cpp(71,65): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Projects\GP3-CWK\Lab1\Game.cpp(71,39): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Projects\GP3-CWK\Lab1\Game.cpp(230,31): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
   Lab1.vcxproj -> C:\Projects\GP3-CWK\Debug\Labs.exe

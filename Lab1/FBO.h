@@ -1,5 +1,4 @@
 #pragma once
-#include "Shading.h"
 #include <GL/glew.h>
 #include <iostream>
 
@@ -15,13 +14,10 @@ public:
 
 private:
 
-
 	GLuint FBO; // Frame Buffer 
 	GLuint RBO; // Render Buffer 
 	GLuint CBO; // Colour Buffer 
 	GLuint quadVAO;
 	GLuint quadVBO;
-
-	Shading FBOShader;
 };
 

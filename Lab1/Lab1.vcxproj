@@ -40,6 +40,10 @@
   <ItemGroup>
     <None Include="..\res\ADSshader.frag" />
     <None Include="..\res\ADSshader.vert" />
+    <None Include="..\res\FBOGrayscaleShader.frag" />
+    <None Include="..\res\FBOGrayscaleShader.vert" />
+    <None Include="..\res\FBOInversionShader.frag" />
+    <None Include="..\res\FBOInversionShader.vert" />
     <None Include="..\res\FBOShader.frag" />
     <None Include="..\res\FBOShader.vert" />
     <None Include="..\res\FogShader.frag" />

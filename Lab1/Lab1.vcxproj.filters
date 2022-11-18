@@ -151,5 +151,17 @@
     <None Include="..\res\FBOShader.vert">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="..\res\FBOGrayscaleShader.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\FBOGrayscaleShader.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\FBOInversionShader.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\res\FBOInversionShader.vert">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
