@@ -48,10 +48,11 @@ private:
 	GameObject monkey;
 	GameObject teapot;
 	GameObject capsule;
+	GameObject asteroids[8];
 	Camera camera;
 	FBO fbo;
 
-	Texturing texture;
+	Texturing textures;
 	Shading shader;
 	Shading fogshader;
 	Shading toonshader;

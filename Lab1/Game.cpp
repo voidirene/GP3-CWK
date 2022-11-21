@@ -45,11 +45,23 @@ void Game::Exit(std::string text)
 
 void Game::InitializeSystems()
 {
+	srand(time(0)); //NOTE: seeding rand so that it works properly
+
 	gameDisplay->InitializeDisplay(); //initializes the game display
 
 	monkey.LoadModel("..\\res\\monkey3.obj"); //loads a mesh from file
 	teapot.LoadModel("..\\res\\teapot.obj");
 	capsule.LoadModel("..\\res\\capsule.obj");
+	for (int i = 0; i < sizeof(asteroids) / sizeof(GameObject); i++) //TODO: make loop count backwards for increased performance
+	{
+		asteroids[i].LoadModel("..\\res\\asteroid.obj");
+
+		//initialize position of each asteroid
+		float randomX = ((float)rand() / (RAND_MAX)) * 10;
+		float randomY = ((float)rand() / (RAND_MAX)) * 10;
+		float randomZ = ((float)rand() / (RAND_MAX)) * 10;
+		asteroids[i].SetTransformParameters(glm::vec3(randomX, randomY, randomZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.001, 0.001, 0.001));
+	}
 
 	shader.InitializeShader("..\\res\\shader"); //create a new shader
 	fogshader.InitializeShader("..\\res\\FogShader");
@@ -63,9 +75,10 @@ void Game::InitializeSystems()
 	fbograyscaleshader.InitializeShader("..\\res\\FBOGrayscaleShader");
 	fboinversionshader.InitializeShader("..\\res\\FBOInversionShader");
 
-	texture.InitializeTexture("..\\res\\bricks.jpg"); //load a texture
-	texture.InitializeTexture("..\\res\\water.jpg");
-	texture.InitializeTexture("..\\res\\grass.jpg");
+	textures.InitializeTexture("..\\res\\bricks.jpg"); //load a texture
+	textures.InitializeTexture("..\\res\\water.jpg");
+	textures.InitializeTexture("..\\res\\grass.jpg");
+	textures.InitializeTexture("..\\res\\rock.jpg");
 
 	camera.InitializeCamera(glm::vec3(0, 0, -5), 70.0f, (float) gameDisplay->GetWidth() / gameDisplay->GetHeight(), 0.01f, 1000.0f); //initializes the camera
 	fbo.GenerateFBO(gameDisplay->GetWidth(), gameDisplay->GetHeight());
@@ -347,7 +360,7 @@ void Game::UpdateDisplay()
 	//geoshader.UpdateTransform(mesh1.transform, camera);
 	//reflectionshader.UpdateTransform(monkey.GetTransform(), camera);
 	fbograyscaleshader.UpdateTransform(monkey.GetTransform(), camera);
-	texture.UseTexture(0);
+	textures.UseTexture(0);
 	monkey.SetTransformParameters(glm::vec3(-1.0, 0.0, 0.0), glm::vec3(counter, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0));
 	monkey.DisplayMesh();
 
@@ -362,7 +375,7 @@ void Game::UpdateDisplay()
 	//toonrimshader.UpdateTransform(mesh2.transform, camera);
 	geoshader.UpdateTransform(teapot.GetTransform(), camera);
 	//reflectionshader.UpdateTransform(mesh2.transform, camera);
-	texture.UseTexture(1);
+	textures.UseTexture(1);
 	teapot.SetTransformParameters(glm::vec3(0.0, sinf(counter) * 5, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.1, 0.1, 0.1));
 	teapot.DisplayMesh();
 
@@ -378,19 +391,29 @@ void Game::UpdateDisplay()
 	//geoshader.UpdateTransform(mesh3.transform, camera);
 	//reflectionshader.UpdateTransform(mesh3.transform, camera);
 	adsshader.UpdateTransform(capsule.GetTransform(), camera);
-	texture.UseTexture(2);
+	textures.UseTexture(2);
 	capsule.SetTransformParameters(glm::vec3(3.0, 0.0, sinf(counter) * 3), glm::vec3(0.0, counter, 0.0), glm::vec3(1.0, 1.0, 1.0));
 	capsule.DisplayMesh();
 
-	counter += 0.001f;
+	//ASTEROIDS
+	shader.UseShader();
+	textures.UseTexture(3);
+	for (int i = 0; i < sizeof(asteroids) / sizeof(GameObject); i++) //TODO: make loop count backwards for increased performance
+	{
+		shader.UpdateTransform(asteroids[i].GetTransform(), camera);
+		asteroids[i].SetTransformParameters(*asteroids[i].GetTransform().GetPosition(), glm::vec3(counter, 0.0, 0.0), glm::vec3(0.001, 0.001, 0.001)); //TODO: use deltatime instead of counter?
+		asteroids[i].DisplayMesh();
+	}
 
 	DisplaySkybox();
+
+	counter += 0.001f;
 
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnd();
 
 	fbo.UnbindFBO();
-	fboinversionshader.UseShader();
+	fboshader.UseShader();
 	fbo.RenderFBOtoQuad();
 	gameDisplay->ChangeBuffer(); //swap the buffers
 }

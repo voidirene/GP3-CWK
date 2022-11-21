@@ -19,7 +19,7 @@ public:
 
 private:
 
-	GLuint textureHandler[3];
+	GLuint textureHandler[4];
 	unsigned int amountOfTextures;
 };
 
