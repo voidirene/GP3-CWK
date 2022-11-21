@@ -49,6 +49,7 @@ private:
 	GameObject teapot;
 	GameObject capsule;
 	GameObject asteroids[8];
+	GameObject spaceship;
 	Camera camera;
 	FBO fbo;
 

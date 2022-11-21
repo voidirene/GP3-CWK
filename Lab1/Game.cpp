@@ -62,6 +62,7 @@ void Game::InitializeSystems()
 		float randomZ = ((float)rand() / (RAND_MAX)) * 10;
 		asteroids[i].SetTransformParameters(glm::vec3(randomX, randomY, randomZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.001, 0.001, 0.001));
 	}
+	spaceship.LoadModel("..\\res\\spaceship.obj");
 
 	shader.InitializeShader("..\\res\\shader"); //create a new shader
 	fogshader.InitializeShader("..\\res\\FogShader");
@@ -79,6 +80,7 @@ void Game::InitializeSystems()
 	textures.InitializeTexture("..\\res\\water.jpg");
 	textures.InitializeTexture("..\\res\\grass.jpg");
 	textures.InitializeTexture("..\\res\\rock.jpg");
+	textures.InitializeTexture("..\\res\\spaceshiptexture.jpg");
 
 	camera.InitializeCamera(glm::vec3(0, 0, -5), 70.0f, (float) gameDisplay->GetWidth() / gameDisplay->GetHeight(), 0.01f, 1000.0f); //initializes the camera
 	fbo.GenerateFBO(gameDisplay->GetWidth(), gameDisplay->GetHeight());
@@ -404,6 +406,12 @@ void Game::UpdateDisplay()
 		asteroids[i].SetTransformParameters(*asteroids[i].GetTransform().GetPosition(), glm::vec3(counter, 0.0, 0.0), glm::vec3(0.001, 0.001, 0.001)); //TODO: use deltatime instead of counter?
 		asteroids[i].DisplayMesh();
 	}
+
+	//SPACESHIP
+	shader.UpdateTransform(spaceship.GetTransform(), camera);
+	textures.UseTexture(4);
+	spaceship.SetTransformParameters(glm::vec3(-3.0, 2.0, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.001, 0.001, 0.001));
+	spaceship.DisplayMesh();
 
 	DisplaySkybox();
 

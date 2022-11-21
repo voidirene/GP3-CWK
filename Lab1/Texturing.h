@@ -12,6 +12,7 @@ public:
 
 	void InitializeTexture(const std::string& file);
 	void UseTexture(unsigned int number); //uses up to 32 textures	
+	void UnbindTexture();
 	
 	GLuint LoadCubemap(std::vector<std::string> faces);
 	GLint GetTexHandler(unsigned int texID) { return textureHandler[texID]; }
@@ -19,7 +20,7 @@ public:
 
 private:
 
-	GLuint textureHandler[4];
+	GLuint textureHandler[5];
 	unsigned int amountOfTextures;
 };
 

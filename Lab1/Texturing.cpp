@@ -57,6 +57,11 @@ void Texturing::UseTexture(unsigned int number)
 	glBindTexture(GL_TEXTURE_2D, textureHandler[number]); //type of and texture to bind to unit
 }
 
+void Texturing::UnbindTexture()
+{
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 GLuint Texturing::LoadCubemap(std::vector<std::string> faces)
 {
 	glGenTextures(1, &textureHandler[amountOfTextures]);
