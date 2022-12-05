@@ -51,7 +51,7 @@ void Game::InitializeSystems()
 
 	monkey.LoadModel("..\\res\\monkey3.obj"); //loads a mesh from file
 	teapot.LoadModel("..\\res\\teapot.obj");
-	capsule.LoadModel("..\\res\\capsule.obj");
+	bullet.LoadModel("..\\res\\bullet.obj");
 	for (int i = 0; i < sizeof(asteroids) / sizeof(GameObject); i++) //TODO: make loop count backwards for increased performance
 	{
 		asteroids[i].LoadModel("..\\res\\asteroid.obj");
@@ -78,7 +78,7 @@ void Game::InitializeSystems()
 
 	textures.InitializeTexture("..\\res\\bricks.jpg"); //load a texture
 	textures.InitializeTexture("..\\res\\water.jpg");
-	textures.InitializeTexture("..\\res\\grass.jpg");
+	textures.InitializeTexture("..\\res\\bullettexture.jpg");
 	textures.InitializeTexture("..\\res\\rock.jpg");
 	textures.InitializeTexture("..\\res\\spaceshiptexture.jpg");
 
@@ -198,13 +198,13 @@ void Game::LinkToonShaderData()
 void Game::LinkRimLightingShaderData()
 {
 	rimshader.setVec3("lightDir", glm::vec3(0, 0, 3));
-	rimshader.setMat4("m", capsule.GetModelMatrix());
+	rimshader.setMat4("m", bullet.GetModelMatrix());
 }
 
 void Game::LinkToonRimShaderData()
 {
 	toonrimshader.setVec3("lightDir", glm::vec3(0, 0, 3));
-	toonrimshader.setMat4("m", capsule.GetModelMatrix());
+	toonrimshader.setMat4("m", bullet.GetModelMatrix());
 }
 
 void Game::LinkGeoShaderData()
@@ -230,7 +230,7 @@ void Game::LinkADSShaderData()
 {
 	adsshader.setMat4("view", camera.GetView());
 	adsshader.setMat4("projection", camera.GetProjection());
-	adsshader.setMat4("model", capsule.GetModelMatrix());
+	adsshader.setMat4("model", bullet.GetModelMatrix());
 	adsshader.setVec3("lightPos", 0.5f, 2.0f, -3.0f);
 	adsshader.setVec3("viewPos", camera.GetPosition());
 	adsshader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
@@ -293,11 +293,11 @@ void Game::ProcessUserInputs()
 	//TODO: setup multiple mesh support
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_E) == GLFW_PRESS)
 	{
-		camera.RotateCameraAroundMesh(*capsule.GetTransform().GetPosition(), cameraSpeed * deltaTime);
+		camera.RotateCameraAroundMesh(*bullet.GetTransform().GetPosition(), cameraSpeed * deltaTime);
 	}
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_Q) == GLFW_PRESS)
 	{
-		camera.RotateCameraAroundMesh(*capsule.GetTransform().GetPosition(), -cameraSpeed * deltaTime);
+		camera.RotateCameraAroundMesh(*bullet.GetTransform().GetPosition(), -cameraSpeed * deltaTime);
 	}
 	//for zooming camera in and out
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_EQUAL) == GLFW_PRESS)
@@ -319,7 +319,7 @@ void Game::ProcessUserInputs()
 	}
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_3) == GLFW_PRESS)
 	{
-		camera.CenterCameraOnMesh(*capsule.GetTransform().GetPosition(), -15);
+		camera.CenterCameraOnMesh(*bullet.GetTransform().GetPosition(), -15);
 	}
 	//for pointing camera at a mesh
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_4) == GLFW_PRESS)
@@ -332,7 +332,7 @@ void Game::ProcessUserInputs()
 	}
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_6) == GLFW_PRESS)
 	{
-		camera.PointCameraAtMesh(*capsule.GetTransform().GetPosition());
+		camera.PointCameraAtMesh(*bullet.GetTransform().GetPosition());
 	}
 
 	//camera mouse input
@@ -344,61 +344,27 @@ void Game::UpdateDisplay()
 	fbo.BindFBO();
 	gameDisplay->ClearDisplay(0.0f, 0.0f, 0.0f, 1.0f); //clear the display
 
-	//shader.UseShader();
-	//fogshader.UseShader();
-	//toonshader.UseShader();
-	//LinkRimLightingShaderData();
-	//rimshader.UseShader();
+	shader.UseShader();
 
-	reflectionshader.UseShader();
-	LinkReflectionShaderData();
 	//MESH1
-	//shader.UpdateTransform(mesh1.transform, camera);
-	//fogshader.UpdateTransform(mesh1.transform, camera);
-	//fogshader.setMat4("ModelMatrix", mesh1.transform.GetModel());
-	//toonshader.UpdateTransform(mesh1.transform, camera);
-	//rimshader.UpdateTransform(mesh1.transform, camera);
-	//toonrimshader.UpdateTransform(mesh1.transform, camera);
-	//geoshader.UpdateTransform(mesh1.transform, camera);
-	//reflectionshader.UpdateTransform(monkey.GetTransform(), camera);
-	fbograyscaleshader.UpdateTransform(monkey.GetTransform(), camera);
 	textures.UseTexture(0);
+	shader.UpdateTransform(monkey.GetTransform(), camera);
 	monkey.SetTransformParameters(glm::vec3(-1.0, 0.0, 0.0), glm::vec3(counter, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0));
 	monkey.DisplayMesh();
 
-	geoshader.UseShader();
-	LinkGeoShaderData();
 	//MESH2
-	//shader.UpdateTransform(mesh2.transform, camera);
-	//fogshader.UpdateTransform(mesh2.transform, camera);
-	//fogshader.setMat4("ModelMatrix", mesh2.transform.GetModel());
-	//toonshader.UpdateTransform(mesh2.transform, camera);
-	//rimshader.UpdateTransform(mesh2.transform, camera);
-	//toonrimshader.UpdateTransform(mesh2.transform, camera);
-	geoshader.UpdateTransform(teapot.GetTransform(), camera);
-	//reflectionshader.UpdateTransform(mesh2.transform, camera);
 	textures.UseTexture(1);
+	shader.UpdateTransform(teapot.GetTransform(), camera);
 	teapot.SetTransformParameters(glm::vec3(0.0, sinf(counter) * 5, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.1, 0.1, 0.1));
 	teapot.DisplayMesh();
 
-	adsshader.UseShader();
-	LinkADSShaderData();
 	//MESH3
-	//shader.UpdateTransform(mesh3.transform, camera);
-	//fogshader.UpdateTransform(mesh3.transform, camera);
-	//fogshader.setMat4("ModelMatrix", mesh3.transform.GetModel());
-	//toonshader.UpdateTransform(mesh3.transform, camera);
-	//rimshader.UpdateTransform(mesh3.transform, camera);
-	//toonrimshader.UpdateTransform(mesh3.transform, camera);
-	//geoshader.UpdateTransform(mesh3.transform, camera);
-	//reflectionshader.UpdateTransform(mesh3.transform, camera);
-	adsshader.UpdateTransform(capsule.GetTransform(), camera);
 	textures.UseTexture(2);
-	capsule.SetTransformParameters(glm::vec3(3.0, 0.0, sinf(counter) * 3), glm::vec3(0.0, counter, 0.0), glm::vec3(1.0, 1.0, 1.0));
-	capsule.DisplayMesh();
+	shader.UpdateTransform(bullet.GetTransform(), camera);
+	bullet.SetTransformParameters(glm::vec3(3.0, 0.0, sinf(counter) * 3), glm::vec3(0.0, counter, 0.0), glm::vec3(0.1, 0.1, 0.1));
+	bullet.DisplayMesh();
 
 	//ASTEROIDS
-	shader.UseShader();
 	textures.UseTexture(3);
 	for (int i = 0; i < sizeof(asteroids) / sizeof(GameObject); i++) //TODO: make loop count backwards for increased performance
 	{
@@ -408,9 +374,9 @@ void Game::UpdateDisplay()
 	}
 
 	//SPACESHIP
-	shader.UpdateTransform(spaceship.GetTransform(), camera);
 	textures.UseTexture(4);
-	spaceship.SetTransformParameters(glm::vec3(-3.0, 2.0, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.001, 0.001, 0.001));
+	shader.UpdateTransform(spaceship.GetTransform(), camera);
+	spaceship.SetTransformParameters(glm::vec3(-3.0, 2.0, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.25, 0.25, 0.25));
 	spaceship.DisplayMesh();
 
 	DisplaySkybox();

@@ -47,7 +47,7 @@ private:
 
 	GameObject monkey;
 	GameObject teapot;
-	GameObject capsule;
+	GameObject bullet;
 	GameObject asteroids[8];
 	GameObject spaceship;
 	Camera camera;
