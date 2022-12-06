@@ -57,12 +57,12 @@ void Game::InitializeSystems()
 		asteroids[i].LoadModel("..\\res\\asteroid.obj");
 
 		//initialize position of each asteroid
-		float randomX = ((float)rand() / (RAND_MAX)) * 10;
-		float randomY = ((float)rand() / (RAND_MAX)) * 10;
-		float randomZ = ((float)rand() / (RAND_MAX)) * 10;
-		asteroids[i].SetTransformParameters(glm::vec3(randomX, randomY, randomZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.001, 0.001, 0.001));
+		float randomX = rand() % 11 + (-5); //random integer between -5 and 5
+		float randomY = rand() % 11 + (-5);
+		asteroids[i].SetTransformParameters(glm::vec3(randomX, randomY, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.001, 0.001, 0.001));
 	}
 	spaceship.LoadModel("..\\res\\spaceship.obj");
+	spaceship.SetTransformParameters(glm::vec3(0, 0, 0), glm::vec3(-90.0, 0.0, 0.0), glm::vec3(0.2, 0.2, 0.2)); //initialize spaceship position
 
 	shader.InitializeShader("..\\res\\shader"); //create a new shader
 	fogshader.InitializeShader("..\\res\\FogShader");
@@ -82,7 +82,8 @@ void Game::InitializeSystems()
 	textures.InitializeTexture("..\\res\\rock.jpg");
 	textures.InitializeTexture("..\\res\\spaceshiptexture.jpg");
 
-	camera.InitializeCamera(glm::vec3(0, 0, -5), 70.0f, (float) gameDisplay->GetWidth() / gameDisplay->GetHeight(), 0.01f, 1000.0f); //initializes the camera
+	camera.InitializeCamera(glm::vec3(0, 10, 0), 70.0f, (float) gameDisplay->GetWidth() / gameDisplay->GetHeight(), 0.01f, 1000.0f); //initializes the camera
+	camera.CenterCameraOnMesh(*spaceship.GetTransform().GetPosition(), -10.0f);
 	fbo.GenerateFBO(gameDisplay->GetWidth(), gameDisplay->GetHeight());
 	fbo.GenerateQuad();
 
@@ -351,13 +352,13 @@ void Game::UpdateDisplay()
 	//MESH1
 	textures.UseTexture(0);
 	toonrimshader.UpdateTransform(monkey.GetTransform(), camera);
-	monkey.SetTransformParameters(glm::vec3(-1.0, 0.0, 0.0), glm::vec3(counter, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0));
+	monkey.SetTransformParameters(glm::vec3(-5.0, 0.0, 0.0), glm::vec3(counter, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0));
 	monkey.DisplayMesh();
 
 	//MESH2
 	textures.UseTexture(1);
 	toonrimshader.UpdateTransform(teapot.GetTransform(), camera);
-	teapot.SetTransformParameters(glm::vec3(0.0, sinf(counter) * 5, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.1, 0.1, 0.1));
+	teapot.SetTransformParameters(glm::vec3(-5.0, sinf(counter) * 5, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.1, 0.1, 0.1));
 	teapot.DisplayMesh();
 
 	//ASTEROIDS
@@ -372,7 +373,7 @@ void Game::UpdateDisplay()
 	//SPACESHIP
 	textures.UseTexture(4);
 	toonrimshader.UpdateTransform(spaceship.GetTransform(), camera);
-	spaceship.SetTransformParameters(glm::vec3(-3.0, 2.0, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.25, 0.25, 0.25));
+	spaceship.SetTransformParameters(*spaceship.GetTransform().GetPosition(), glm::vec3(-90.0, 0.0, sinf(counter) / 5), glm::vec3(0.25, 0.25, 0.25)); //wobble effect
 	spaceship.DisplayMesh();
 
 	//BULLET
