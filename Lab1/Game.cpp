@@ -203,7 +203,7 @@ void Game::LinkRimLightingShaderData()
 
 void Game::LinkToonRimShaderData()
 {
-	toonrimshader.setVec3("lightDir", glm::vec3(0, 0, 3));
+	toonrimshader.setVec3("lightDir", glm::vec3(0, 5, 0));
 	toonrimshader.setMat4("m", bullet.GetModelMatrix());
 }
 
@@ -344,40 +344,42 @@ void Game::UpdateDisplay()
 	fbo.BindFBO();
 	gameDisplay->ClearDisplay(0.0f, 0.0f, 0.0f, 1.0f); //clear the display
 
-	shader.UseShader();
+	//shader.UseShader();
+	toonrimshader.UseShader();
+	LinkToonRimShaderData();
 
 	//MESH1
 	textures.UseTexture(0);
-	shader.UpdateTransform(monkey.GetTransform(), camera);
+	toonrimshader.UpdateTransform(monkey.GetTransform(), camera);
 	monkey.SetTransformParameters(glm::vec3(-1.0, 0.0, 0.0), glm::vec3(counter, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0));
 	monkey.DisplayMesh();
 
 	//MESH2
 	textures.UseTexture(1);
-	shader.UpdateTransform(teapot.GetTransform(), camera);
+	toonrimshader.UpdateTransform(teapot.GetTransform(), camera);
 	teapot.SetTransformParameters(glm::vec3(0.0, sinf(counter) * 5, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.1, 0.1, 0.1));
 	teapot.DisplayMesh();
-
-	//MESH3
-	textures.UseTexture(2);
-	shader.UpdateTransform(bullet.GetTransform(), camera);
-	bullet.SetTransformParameters(glm::vec3(3.0, 0.0, sinf(counter) * 3), glm::vec3(0.0, counter, 0.0), glm::vec3(0.1, 0.1, 0.1));
-	bullet.DisplayMesh();
 
 	//ASTEROIDS
 	textures.UseTexture(3);
 	for (int i = 0; i < sizeof(asteroids) / sizeof(GameObject); i++) //TODO: make loop count backwards for increased performance
 	{
-		shader.UpdateTransform(asteroids[i].GetTransform(), camera);
+		toonrimshader.UpdateTransform(asteroids[i].GetTransform(), camera);
 		asteroids[i].SetTransformParameters(*asteroids[i].GetTransform().GetPosition(), glm::vec3(counter, 0.0, 0.0), glm::vec3(0.001, 0.001, 0.001)); //TODO: use deltatime instead of counter?
 		asteroids[i].DisplayMesh();
 	}
 
 	//SPACESHIP
 	textures.UseTexture(4);
-	shader.UpdateTransform(spaceship.GetTransform(), camera);
+	toonrimshader.UpdateTransform(spaceship.GetTransform(), camera);
 	spaceship.SetTransformParameters(glm::vec3(-3.0, 2.0, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.25, 0.25, 0.25));
 	spaceship.DisplayMesh();
+
+	//BULLET
+	textures.UseTexture(2);
+	toonrimshader.UpdateTransform(bullet.GetTransform(), camera);
+	bullet.SetTransformParameters(glm::vec3(3.0, 0.0, 0.0), glm::vec3(counter, counter, counter), glm::vec3(0.1, 0.1, 0.1));
+	bullet.DisplayMesh();
 
 	DisplaySkybox();
 
