@@ -255,7 +255,15 @@ void Game::GameLoop()
 		ProcessUserInputs();
 		UpdateDisplay();
 
-		DetectCollision(monkey.boundingSphere.GetPosition(), monkey.boundingSphere.GetRadius(), teapot.boundingSphere.GetPosition(), teapot.boundingSphere.GetRadius());
+		for (int i = 0; i < sizeof(asteroids) / sizeof(GameObject); i++) //TODO: make loop count backwards for increased performance
+		{
+			if (DetectCollision(asteroids[i].boundingSphere.GetPosition(), asteroids[i].boundingSphere.GetRadius(), bullet.boundingSphere.GetPosition(), bullet.boundingSphere.GetRadius()))
+			{
+				audio.PlaySound(0); //plays a sound if sound isn't already playing
+				//TODO: destroy bullet and asteroid (set inactive)
+				break;
+			}
+		}
 		UpdateDelta();
 	}
 
@@ -273,20 +281,44 @@ void Game::ProcessUserInputs()
 		return;
 	}
 
-	//for keyboard camera movement
+	//for spaceship movement
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		camera.MoveCameraVertically(cameraSpeed * deltaTime);
+		spaceship.SetTransformParameters(*spaceship.GetTransform().GetPosition() + glm::vec3(0, 5, 0) * deltaTime, *spaceship.GetTransform().GetRotation(), *spaceship.GetTransform().GetScale());
 	}
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		camera.MoveCameraVertically(-cameraSpeed * deltaTime);
+		spaceship.SetTransformParameters(*spaceship.GetTransform().GetPosition() + glm::vec3(0, -5, 0) * deltaTime, *spaceship.GetTransform().GetRotation(), *spaceship.GetTransform().GetScale());
 	}
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		camera.MoveCameraHorizontally(cameraSpeed * deltaTime);
+		spaceship.SetTransformParameters(*spaceship.GetTransform().GetPosition() + glm::vec3(5, 0, 0) * deltaTime, *spaceship.GetTransform().GetRotation(), *spaceship.GetTransform().GetScale());
 	}
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		spaceship.SetTransformParameters(*spaceship.GetTransform().GetPosition() + glm::vec3(-5, 0, 0) * deltaTime, *spaceship.GetTransform().GetRotation(), *spaceship.GetTransform().GetScale());
+	}
+	//for spaceship firing
+	if (glfwGetKey(gameDisplay->window, GLFW_KEY_F) == GLFW_PRESS)
+	{
+		bullet.SetTransformParameters(*spaceship.GetTransform().GetPosition() + glm::vec3(0, 5, 0) * deltaTime, *bullet.GetTransform().GetRotation(), glm::vec3(0.05, 0.05, 0.05));
+	}
+
+	//for keyboard camera movement
+	//TODO: make lock/flag to switch between centering camera on mesh and these
+	if (glfwGetKey(gameDisplay->window, GLFW_KEY_UP) == GLFW_PRESS)
+	{
+		camera.MoveCameraVertically(cameraSpeed * deltaTime);
+	}
+	if (glfwGetKey(gameDisplay->window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	{
+		camera.MoveCameraVertically(-cameraSpeed * deltaTime);
+	}
+	if (glfwGetKey(gameDisplay->window, GLFW_KEY_LEFT) == GLFW_PRESS)
+	{
+		camera.MoveCameraHorizontally(cameraSpeed * deltaTime);
+	}
+	if (glfwGetKey(gameDisplay->window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 	{
 		camera.MoveCameraHorizontally(-cameraSpeed * deltaTime);
 	}
@@ -345,21 +377,23 @@ void Game::UpdateDisplay()
 	fbo.BindFBO();
 	gameDisplay->ClearDisplay(0.0f, 0.0f, 0.0f, 1.0f); //clear the display
 
+	camera.CenterCameraOnMesh(*spaceship.GetTransform().GetPosition(), -10);
+
 	//shader.UseShader();
 	toonrimshader.UseShader();
 	LinkToonRimShaderData();
 
-	//MESH1
-	textures.UseTexture(0);
-	toonrimshader.UpdateTransform(monkey.GetTransform(), camera);
-	monkey.SetTransformParameters(glm::vec3(-5.0, 0.0, 0.0), glm::vec3(counter, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0));
-	monkey.DisplayMesh();
+	////MESH1
+	//textures.UseTexture(0);
+	//toonrimshader.UpdateTransform(monkey.GetTransform(), camera);
+	//monkey.SetTransformParameters(glm::vec3(-5.0, 0.0, 0.0), glm::vec3(counter, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0));
+	//monkey.DisplayMesh();
 
-	//MESH2
-	textures.UseTexture(1);
-	toonrimshader.UpdateTransform(teapot.GetTransform(), camera);
-	teapot.SetTransformParameters(glm::vec3(-5.0, sinf(counter) * 5, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.1, 0.1, 0.1));
-	teapot.DisplayMesh();
+	////MESH2
+	//textures.UseTexture(1);
+	//toonrimshader.UpdateTransform(teapot.GetTransform(), camera);
+	//teapot.SetTransformParameters(glm::vec3(-5.0, sinf(counter) * 5, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.1, 0.1, 0.1));
+	//teapot.DisplayMesh();
 
 	//ASTEROIDS
 	textures.UseTexture(3);
@@ -373,13 +407,13 @@ void Game::UpdateDisplay()
 	//SPACESHIP
 	textures.UseTexture(4);
 	toonrimshader.UpdateTransform(spaceship.GetTransform(), camera);
-	spaceship.SetTransformParameters(*spaceship.GetTransform().GetPosition(), glm::vec3(-90.0, 0.0, sinf(counter) / 5), glm::vec3(0.25, 0.25, 0.25)); //wobble effect
+	spaceship.SetTransformParameters(*spaceship.GetTransform().GetPosition(), glm::vec3(-90.0, 0.0, sinf(counter) / 3), glm::vec3(0.25, 0.25, 0.25)); //wobble effect
 	spaceship.DisplayMesh();
 
 	//BULLET
 	textures.UseTexture(2);
 	toonrimshader.UpdateTransform(bullet.GetTransform(), camera);
-	bullet.SetTransformParameters(glm::vec3(3.0, 0.0, 0.0), glm::vec3(counter, counter, counter), glm::vec3(0.1, 0.1, 0.1));
+	bullet.SetTransformParameters(*bullet.GetTransform().GetPosition() + glm::vec3(0, 3, 0) * deltaTime, *bullet.GetTransform().GetRotation(), glm::vec3(0.05, 0.05, 0.05));
 	bullet.DisplayMesh();
 
 	DisplaySkybox();
@@ -401,13 +435,10 @@ bool Game::DetectCollision(glm::vec3 position1, float radius1, glm::vec3 positio
 
 	if (distance < (radius1 + radius2))
 	{
-		cout << "collision! : " << distance << '\n';
-		audio.PlaySound(0); //plays a sound if sound isn't already playing
 		return true;
 	}
 	else
 	{
-		cout << "NO collision! : " << distance << '\n';
 		return false;
 	}
 }

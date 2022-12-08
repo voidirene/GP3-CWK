@@ -85,8 +85,7 @@ public:
 			firstPress = true; //set this to true again
 		}
 	}
-
-	//the 0.02 is a value for sensitivity, a higher number means a faster camera
+	
 	void MoveCameraHorizontally(float direction)
 	{
 		cameraPosition.x += direction;
