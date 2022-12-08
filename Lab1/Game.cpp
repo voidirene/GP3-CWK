@@ -49,8 +49,8 @@ void Game::InitializeSystems()
 
 	gameDisplay->InitializeDisplay(); //initializes the game display
 
-	monkey.LoadModel("..\\res\\monkey3.obj"); //loads a mesh from file
-	teapot.LoadModel("..\\res\\teapot.obj");
+	spaceship.LoadModel("..\\res\\spaceship.obj"); //loads a mesh from file
+	spaceship.SetTransformParameters(glm::vec3(0, 0, 0), glm::vec3(-90.0, 0.0, 0.0), glm::vec3(0.2, 0.2, 0.2)); //initialize spaceship position
 	bullet.LoadModel("..\\res\\bullet.obj");
 	for (int i = 0; i < sizeof(asteroids) / sizeof(GameObject); i++) //TODO: make loop count backwards for increased performance
 	{
@@ -61,8 +61,6 @@ void Game::InitializeSystems()
 		float randomY = rand() % 11 + (-5);
 		asteroids[i].SetTransformParameters(glm::vec3(randomX, randomY, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.001, 0.001, 0.001));
 	}
-	spaceship.LoadModel("..\\res\\spaceship.obj");
-	spaceship.SetTransformParameters(glm::vec3(0, 0, 0), glm::vec3(-90.0, 0.0, 0.0), glm::vec3(0.2, 0.2, 0.2)); //initialize spaceship position
 
 	shader.InitializeShader("..\\res\\shader"); //create a new shader
 	fogshader.InitializeShader("..\\res\\FogShader");
@@ -76,18 +74,17 @@ void Game::InitializeSystems()
 	fbograyscaleshader.InitializeShader("..\\res\\FBOGrayscaleShader");
 	fboinversionshader.InitializeShader("..\\res\\FBOInversionShader");
 
-	textures.InitializeTexture("..\\res\\bricks.jpg"); //load a texture
-	textures.InitializeTexture("..\\res\\water.jpg");
-	textures.InitializeTexture("..\\res\\bullettexture.jpg");
+	textures.InitializeTexture("..\\res\\spaceshiptexture.jpg"); //load a texture
+	textures.InitializeTexture("..\\res\\bullettexture.jpg"); 
 	textures.InitializeTexture("..\\res\\rock.jpg");
-	textures.InitializeTexture("..\\res\\spaceshiptexture.jpg");
 
 	camera.InitializeCamera(glm::vec3(0, 10, 0), 70.0f, (float) gameDisplay->GetWidth() / gameDisplay->GetHeight(), 0.01f, 1000.0f); //initializes the camera
 	camera.CenterCameraOnMesh(*spaceship.GetTransform().GetPosition(), -10.0f);
 	fbo.GenerateFBO(gameDisplay->GetWidth(), gameDisplay->GetHeight());
 	fbo.GenerateQuad();
 
-	audio.AddNewSound("..\\res\\bang.wav");
+	audio.AddNewSound("..\\res\\shoot.wav");
+	audio.AddNewSound("..\\res\\zap.wav");
 	audio.AddNewBackgroundMusic("..\\res\\background.wav");
 
 	shaderSkybox.InitializeShader("..\\res\\SkyboxShader");
@@ -204,8 +201,8 @@ void Game::LinkRimLightingShaderData()
 
 void Game::LinkToonRimShaderData()
 {
-	toonrimshader.setVec3("lightDir", glm::vec3(0, 5, 0));
-	toonrimshader.setMat4("m", bullet.GetModelMatrix());
+	toonrimshader.setVec3("lightDir", camera.GetPosition());
+	toonrimshader.setMat4("m", bullet.GetModelMatrix()); //TODO: ...bullet?
 }
 
 void Game::LinkGeoShaderData()
@@ -259,7 +256,7 @@ void Game::GameLoop()
 		{
 			if (DetectCollision(asteroids[i].boundingSphere.GetPosition(), asteroids[i].boundingSphere.GetRadius(), bullet.boundingSphere.GetPosition(), bullet.boundingSphere.GetRadius()))
 			{
-				audio.PlaySound(0); //plays a sound if sound isn't already playing
+				audio.PlaySound(1); //plays a sound if sound isn't already playing
 				//TODO: destroy bullet and asteroid (set inactive)
 				break;
 			}
@@ -302,6 +299,7 @@ void Game::ProcessUserInputs()
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_F) == GLFW_PRESS)
 	{
 		bullet.SetTransformParameters(*spaceship.GetTransform().GetPosition() + glm::vec3(0, 5, 0) * deltaTime, *bullet.GetTransform().GetRotation(), glm::vec3(0.05, 0.05, 0.05));
+		audio.PlaySound(0); //plays a sound if sound isn't already playing
 	}
 
 	//for keyboard camera movement
@@ -383,38 +381,26 @@ void Game::UpdateDisplay()
 	toonrimshader.UseShader();
 	LinkToonRimShaderData();
 
-	////MESH1
-	//textures.UseTexture(0);
-	//toonrimshader.UpdateTransform(monkey.GetTransform(), camera);
-	//monkey.SetTransformParameters(glm::vec3(-5.0, 0.0, 0.0), glm::vec3(counter, 0.0, 0.0), glm::vec3(1.0, 1.0, 1.0));
-	//monkey.DisplayMesh();
-
-	////MESH2
-	//textures.UseTexture(1);
-	//toonrimshader.UpdateTransform(teapot.GetTransform(), camera);
-	//teapot.SetTransformParameters(glm::vec3(-5.0, sinf(counter) * 5, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.1, 0.1, 0.1));
-	//teapot.DisplayMesh();
-
-	//ASTEROIDS
-	textures.UseTexture(3);
-	for (int i = 0; i < sizeof(asteroids) / sizeof(GameObject); i++) //TODO: make loop count backwards for increased performance
-	{
-		toonrimshader.UpdateTransform(asteroids[i].GetTransform(), camera);
-		asteroids[i].SetTransformParameters(*asteroids[i].GetTransform().GetPosition(), glm::vec3(counter, 0.0, 0.0), glm::vec3(0.001, 0.001, 0.001)); //TODO: use deltatime instead of counter?
-		asteroids[i].DisplayMesh();
-	}
-
 	//SPACESHIP
-	textures.UseTexture(4);
+	textures.UseTexture(0);
 	toonrimshader.UpdateTransform(spaceship.GetTransform(), camera);
 	spaceship.SetTransformParameters(*spaceship.GetTransform().GetPosition(), glm::vec3(-90.0, 0.0, sinf(counter) / 3), glm::vec3(0.25, 0.25, 0.25)); //wobble effect
 	spaceship.DisplayMesh();
 
 	//BULLET
-	textures.UseTexture(2);
+	textures.UseTexture(1);
 	toonrimshader.UpdateTransform(bullet.GetTransform(), camera);
-	bullet.SetTransformParameters(*bullet.GetTransform().GetPosition() + glm::vec3(0, 3, 0) * deltaTime, *bullet.GetTransform().GetRotation(), glm::vec3(0.05, 0.05, 0.05));
+	bullet.SetTransformParameters(*bullet.GetTransform().GetPosition() + glm::vec3(0, 5, 0) * deltaTime, *bullet.GetTransform().GetRotation(), glm::vec3(0.05, 0.05, 0.05));
 	bullet.DisplayMesh();
+
+	//ASTEROIDS
+	textures.UseTexture(2);
+	for (int i = 0; i < sizeof(asteroids) / sizeof(GameObject); i++) //TODO: make loop count backwards for increased performance
+	{
+		toonrimshader.UpdateTransform(asteroids[i].GetTransform(), camera);
+		asteroids[i].SetTransformParameters(*asteroids[i].GetTransform().GetPosition(), glm::vec3(counter, counter, counter), glm::vec3(0.001, 0.001, 0.001)); //TODO: use deltatime instead of counter?
+		asteroids[i].DisplayMesh();
+	}
 
 	DisplaySkybox();
 

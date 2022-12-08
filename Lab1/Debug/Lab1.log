@@ -2,7 +2,7 @@
 C:\Projects\GP3-CWK\Lab1\Game.cpp(48,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
 C:\Projects\GP3-CWK\Lab1\Game.cpp(60,17): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
 C:\Projects\GP3-CWK\Lab1\Game.cpp(61,17): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Projects\GP3-CWK\Lab1\Game.cpp(87,65): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Projects\GP3-CWK\Lab1\Game.cpp(87,39): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Projects\GP3-CWK\Lab1\Game.cpp(246,31): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Projects\GP3-CWK\Lab1\Game.cpp(83,65): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Projects\GP3-CWK\Lab1\Game.cpp(83,39): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Projects\GP3-CWK\Lab1\Game.cpp(244,31): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
   Lab1.vcxproj -> C:\Projects\GP3-CWK\Debug\Labs.exe
