@@ -103,8 +103,6 @@ public:
 
 	void CenterCameraOnMesh(glm::vec3 meshPosition, float distance)
 	{
-		forwardVector = glm::vec3(glm::normalize(meshPosition - cameraPosition));
-
 		//center camera on mesh position
 		cameraPosition.x = meshPosition.x;
 		cameraPosition.y = meshPosition.y;
@@ -112,6 +110,17 @@ public:
 		//move the camera back a bit and reset the forward vector
 		cameraPosition.z = distance;
 		forwardVector = glm::vec3(0.0f, 0.0f, 1.0f);
+	}
+
+	void CenterCameraBehindMesh(glm::vec3 meshPosition, float distance)
+	{
+		//center camera on mesh position
+		cameraPosition.x = meshPosition.x;
+
+		//move the camera under mesh and set the forward vector
+		cameraPosition.y = distance;
+		cameraPosition.z = distance;
+		PointCameraAtMesh(meshPosition);
 	}
 
 	void PointCameraAtMesh(glm::vec3 meshPosition)
@@ -125,6 +134,12 @@ public:
 		cameraPosition += glm::cross(upVector, forwardVector) * direction;
 	}
 
+	void ToggleMode()
+	{
+		cameraMode = !cameraMode;
+	}
+	inline bool GetMode() { return cameraMode; }
+
 	bool firstPress = true;
 
 private:
@@ -133,4 +148,6 @@ private:
 	glm::mat4 projectionMatrix;
 	glm::vec3 forwardVector;
 	glm::vec3 upVector;
+
+	bool cameraMode = true;
 };

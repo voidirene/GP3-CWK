@@ -302,6 +302,12 @@ void Game::ProcessUserInputs()
 		audio.PlaySound(0); //plays a sound if sound isn't already playing
 	}
 
+	//for switching between camera modes
+	if (glfwGetKey(gameDisplay->window, GLFW_KEY_T) == GLFW_PRESS)
+	{
+		camera.ToggleMode();
+	}
+
 	//for keyboard camera movement
 	//TODO: make lock/flag to switch between centering camera on mesh and these
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_UP) == GLFW_PRESS)
@@ -375,7 +381,14 @@ void Game::UpdateDisplay()
 	fbo.BindFBO();
 	gameDisplay->ClearDisplay(0.0f, 0.0f, 0.0f, 1.0f); //clear the display
 
-	camera.CenterCameraOnMesh(*spaceship.GetTransform().GetPosition(), -10);
+	if (camera.GetMode())
+	{
+		camera.CenterCameraOnMesh(*spaceship.GetTransform().GetPosition(), -10);
+	}
+	else
+	{
+		camera.CenterCameraBehindMesh(*spaceship.GetTransform().GetPosition(), -10);
+	}
 
 	//shader.UseShader();
 	toonrimshader.UseShader();

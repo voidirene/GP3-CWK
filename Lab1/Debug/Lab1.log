@@ -5,4 +5,9 @@ C:\Projects\GP3-CWK\Lab1\Game.cpp(61,17): warning C4244: 'initializing': convers
 C:\Projects\GP3-CWK\Lab1\Game.cpp(83,65): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
 C:\Projects\GP3-CWK\Lab1\Game.cpp(83,39): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
 C:\Projects\GP3-CWK\Lab1\Game.cpp(243,31): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  GameObject.cpp
+  Main.cpp
+  Mesh.cpp
+  Shading.cpp
+  Generating Code...
   Lab1.vcxproj -> C:\Projects\GP3-CWK\Debug\Labs.exe
