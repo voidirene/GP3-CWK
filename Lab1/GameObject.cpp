@@ -21,6 +21,12 @@ void GameObject::DisplayMesh()
 void GameObject::SetActive(bool set)
 {
 	active = set;
+
+	if (!active)
+	{
+		mesh.~Mesh();
+		SetTransformParameters(glm::vec3(999, 999, 999), glm::vec3(0, 0, 0), glm::vec3(0, 0, 0));
+	}
 }
 
 void GameObject::SetTransformParameters(glm::vec3 movement, glm::vec3 rotation, glm::vec3 scaleChange)

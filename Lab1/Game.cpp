@@ -257,7 +257,7 @@ void Game::GameLoop()
 			if (DetectCollision(asteroids[i].boundingSphere.GetPosition(), asteroids[i].boundingSphere.GetRadius(), bullet.boundingSphere.GetPosition(), bullet.boundingSphere.GetRadius()))
 			{
 				audio.PlaySound(1); //plays a sound if sound isn't already playing
-				//TODO: destroy bullet and asteroid (set inactive)
+				asteroids[i].SetActive(false);
 				break;
 			}
 		}
