@@ -17,7 +17,7 @@ void FBO::GenerateFBO(int width, int height)
 	glGenRenderbuffers(1, &RBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height); // use a single renderbuffer object for both a depth AND stencil buffer.
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	//glBindRenderbuffer(GL_RENDERBUFFER, 0);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO); // now actually attach it
 
 	// now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
@@ -39,10 +39,10 @@ void FBO::UnbindFBO()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void FBO::GenerateQuad()
+void FBO::GenerateFullQuad()
 {
 	float quadVertices[] = {
-		//positions   // texCoords
+		//positions    //texCoords
 		-1.0f,  1.0f,  0.0f, 1.0f,
 		-1.0f, -1.0f,  0.0f, 0.0f,
 		 1.0f, -1.0f,  1.0f, 0.0f,
@@ -50,14 +50,32 @@ void FBO::GenerateQuad()
 		-1.0f,  1.0f,  0.0f, 1.0f,
 		 1.0f, -1.0f,  1.0f, 0.0f,
 		 1.0f,  1.0f,  1.0f, 1.0f
+	};
 
-		//- 0.3f,  1.0f,  0.0f, 1.0f,
-		//-0.3f,  0.7f,  0.0f, 0.0f,
-		// 0.3f,  0.7f,  1.0f, 0.0f,
+	// cube VAO
+	glGenVertexArrays(1, &quadVAO);
+	glGenBuffers(1, &quadVBO);
+	glBindVertexArray(quadVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
 
-		//-0.3f,  1.0f,  0.0f, 1.0f,
-		// 0.3f,  0.7f,  1.0f, 0.0f,
-		// 0.3f,  1.0f,  1.0f, 1.0f
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+}
+
+void FBO::GenerateQuad()
+{
+	float quadVertices[] = {
+		//positions    //texCoords
+		-0.9f,  1.0f,  0.0f, 1.0f,
+		-0.9f,  0.4f,  0.0f, 0.0f,
+		-0.3f,  0.4f,  1.0f, 0.0f,
+
+		-0.9f,  1.0f,  0.0f, 1.0f,
+		-0.3f,  0.4f,  1.0f, 0.0f,
+		-0.3f,  1.0f,  1.0f, 1.0f
 	};
 
 	// cube VAO
@@ -76,8 +94,8 @@ void FBO::GenerateQuad()
 void FBO::RenderFBOtoQuad()
 {
 	glDisable(GL_DEPTH_TEST);
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // set clear color to white (not really necessary actually, since we won't be able to see behind the quad anyways)
-	glClear(GL_COLOR_BUFFER_BIT);
+	//glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // set clear color to white (not really necessary actually, since we won't be able to see behind the quad anyways)
+	//glClear(GL_COLOR_BUFFER_BIT);
 
 	glBindVertexArray(quadVAO);
 	glBindTexture(GL_TEXTURE_2D, CBO);	// use the color attachment texture as the texture of the quad plane

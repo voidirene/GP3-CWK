@@ -1,13 +1,12 @@
-﻿  Game.cpp
+﻿  FBO.cpp
+  Game.cpp
 C:\Projects\GP3-CWK\Lab1\Game.cpp(48,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
 C:\Projects\GP3-CWK\Lab1\Game.cpp(60,17): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
 C:\Projects\GP3-CWK\Lab1\Game.cpp(61,17): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\Projects\GP3-CWK\Lab1\Game.cpp(83,65): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Projects\GP3-CWK\Lab1\Game.cpp(83,39): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Projects\GP3-CWK\Lab1\Game.cpp(243,31): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-  GameObject.cpp
-  Main.cpp
-  Mesh.cpp
-  Shading.cpp
+C:\Projects\GP3-CWK\Lab1\Game.cpp(85,72): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Projects\GP3-CWK\Lab1\Game.cpp(85,46): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Projects\GP3-CWK\Lab1\Game.cpp(87,72): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Projects\GP3-CWK\Lab1\Game.cpp(87,46): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Projects\GP3-CWK\Lab1\Game.cpp(247,31): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
   Generating Code...
   Lab1.vcxproj -> C:\Projects\GP3-CWK\Debug\Labs.exe

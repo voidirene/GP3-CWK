@@ -78,10 +78,14 @@ void Game::InitializeSystems()
 	textures.InitializeTexture("..\\res\\bullettexture.jpg"); 
 	textures.InitializeTexture("..\\res\\rock.jpg");
 
-	camera.InitializeCamera(glm::vec3(0, 10, 0), 70.0f, (float) gameDisplay->GetWidth() / gameDisplay->GetHeight(), 0.01f, 1000.0f); //initializes the camera
+	camera.InitializeCamera(glm::vec3(0, 10, 0), 70.0f, (float)gameDisplay->GetWidth() / gameDisplay->GetHeight(), 0.01f, 1000.0f); //initializes the camera
 	camera.CenterCameraOnMesh(*spaceship.GetTransform().GetPosition(), -10.0f);
-	fbo.GenerateFBO(gameDisplay->GetWidth(), gameDisplay->GetHeight());
-	fbo.GenerateQuad();
+	minimapCamera.InitializeCamera(glm::vec3(0, 10, 0), 70.0f, (float)gameDisplay->GetWidth() / gameDisplay->GetHeight(), 0.01f, 1000.0f); //initializes the camera
+	minimapCamera.CenterCameraOnMesh(*spaceship.GetTransform().GetPosition(), -20.0f);
+	minimapFBO.GenerateFBO(gameDisplay->GetWidth(), gameDisplay->GetHeight());
+	minimapFBO.GenerateQuad();
+	displayFBO.GenerateFBO(gameDisplay->GetWidth(), gameDisplay->GetHeight());
+	displayFBO.GenerateFullQuad();
 
 	audio.AddNewSound("..\\res\\shoot.wav");
 	audio.AddNewSound("..\\res\\zap.wav");
@@ -199,7 +203,7 @@ void Game::LinkRimLightingShaderData()
 	rimshader.setMat4("m", bullet.GetModelMatrix());
 }
 
-void Game::LinkToonRimShaderData()
+void Game::LinkToonRimShaderData(Camera camera)
 {
 	toonrimshader.setVec3("lightDir", camera.GetPosition());
 	toonrimshader.setMat4("m", bullet.GetModelMatrix()); //TODO: ...bullet?
@@ -250,7 +254,9 @@ void Game::GameLoop()
 	{
 		audio.PlayBackgroundMusic();
 		ProcessUserInputs();
+		//UpdateMinimap();
 		UpdateDisplay();
+		UpdateMinimap();
 
 		for (int i = 0; i < sizeof(asteroids) / sizeof(GameObject); i++) //TODO: make loop count backwards for increased performance
 		{
@@ -261,7 +267,9 @@ void Game::GameLoop()
 				break;
 			}
 		}
+
 		UpdateDelta();
+		counter += 0.001f;
 	}
 
 	Exit("Escape key pressed, closing program...");
@@ -307,69 +315,58 @@ void Game::ProcessUserInputs()
 	{
 		camera.ToggleMode();
 	}
+	if (glfwGetKey(gameDisplay->window, GLFW_KEY_L) == GLFW_PRESS)
+	{
+		cameraLock = !cameraLock;
+	}
 
 	//for keyboard camera movement
-	//TODO: make lock/flag to switch between centering camera on mesh and these
-	if (glfwGetKey(gameDisplay->window, GLFW_KEY_UP) == GLFW_PRESS)
+	if (!cameraLock)
 	{
-		camera.MoveCameraVertically(cameraSpeed * deltaTime);
-	}
-	if (glfwGetKey(gameDisplay->window, GLFW_KEY_DOWN) == GLFW_PRESS)
-	{
-		camera.MoveCameraVertically(-cameraSpeed * deltaTime);
-	}
-	if (glfwGetKey(gameDisplay->window, GLFW_KEY_LEFT) == GLFW_PRESS)
-	{
-		camera.MoveCameraHorizontally(cameraSpeed * deltaTime);
-	}
-	if (glfwGetKey(gameDisplay->window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-	{
-		camera.MoveCameraHorizontally(-cameraSpeed * deltaTime);
-	}
-	//for rotating camera around a mesh
-	//TODO: setup multiple mesh support
-	if (glfwGetKey(gameDisplay->window, GLFW_KEY_E) == GLFW_PRESS)
-	{
-		camera.RotateCameraAroundMesh(*bullet.GetTransform().GetPosition(), cameraSpeed * deltaTime);
-	}
-	if (glfwGetKey(gameDisplay->window, GLFW_KEY_Q) == GLFW_PRESS)
-	{
-		camera.RotateCameraAroundMesh(*bullet.GetTransform().GetPosition(), -cameraSpeed * deltaTime);
-	}
-	//for zooming camera in and out
-	if (glfwGetKey(gameDisplay->window, GLFW_KEY_EQUAL) == GLFW_PRESS)
-	{
-		camera.ZoomCamera(cameraSpeed * deltaTime);
-	}
-	if (glfwGetKey(gameDisplay->window, GLFW_KEY_MINUS) == GLFW_PRESS)
-	{
-		camera.ZoomCamera(-cameraSpeed * deltaTime);
-	}
-	//for centering camera on a mesh
-	if (glfwGetKey(gameDisplay->window, GLFW_KEY_1) == GLFW_PRESS)
-	{
-		camera.CenterCameraOnMesh(*monkey.GetTransform().GetPosition(), -5);
-	}
-	if (glfwGetKey(gameDisplay->window, GLFW_KEY_2) == GLFW_PRESS)
-	{
-		camera.CenterCameraOnMesh(*teapot.GetTransform().GetPosition(), -10);
-	}
-	if (glfwGetKey(gameDisplay->window, GLFW_KEY_3) == GLFW_PRESS)
-	{
-		camera.CenterCameraOnMesh(*bullet.GetTransform().GetPosition(), -15);
-	}
-	//for pointing camera at a mesh
-	if (glfwGetKey(gameDisplay->window, GLFW_KEY_4) == GLFW_PRESS)
-	{
-		camera.PointCameraAtMesh(*monkey.GetTransform().GetPosition());
-	}
-	if (glfwGetKey(gameDisplay->window, GLFW_KEY_5) == GLFW_PRESS)
-	{
-		camera.PointCameraAtMesh(*teapot.GetTransform().GetPosition());
-	}
-	if (glfwGetKey(gameDisplay->window, GLFW_KEY_6) == GLFW_PRESS)
-	{
-		camera.PointCameraAtMesh(*bullet.GetTransform().GetPosition());
+		if (glfwGetKey(gameDisplay->window, GLFW_KEY_UP) == GLFW_PRESS)
+		{
+			camera.MoveCameraVertically(cameraSpeed * deltaTime);
+		}
+		if (glfwGetKey(gameDisplay->window, GLFW_KEY_DOWN) == GLFW_PRESS)
+		{
+			camera.MoveCameraVertically(-cameraSpeed * deltaTime);
+		}
+		if (glfwGetKey(gameDisplay->window, GLFW_KEY_LEFT) == GLFW_PRESS)
+		{
+			camera.MoveCameraHorizontally(cameraSpeed * deltaTime);
+		}
+		if (glfwGetKey(gameDisplay->window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+		{
+			camera.MoveCameraHorizontally(-cameraSpeed * deltaTime);
+		}
+		//for rotating camera around a mesh
+		//TODO: setup multiple mesh support
+		if (glfwGetKey(gameDisplay->window, GLFW_KEY_E) == GLFW_PRESS)
+		{
+			camera.RotateCameraAroundMesh(*spaceship.GetTransform().GetPosition(), cameraSpeed * deltaTime);
+		}
+		if (glfwGetKey(gameDisplay->window, GLFW_KEY_Q) == GLFW_PRESS)
+		{
+			camera.RotateCameraAroundMesh(*spaceship.GetTransform().GetPosition(), -cameraSpeed * deltaTime);
+		}
+		//for zooming camera in and out
+		if (glfwGetKey(gameDisplay->window, GLFW_KEY_EQUAL) == GLFW_PRESS)
+		{
+			camera.ZoomCamera(cameraSpeed * deltaTime);
+		}
+		if (glfwGetKey(gameDisplay->window, GLFW_KEY_MINUS) == GLFW_PRESS)
+		{
+			camera.ZoomCamera(-cameraSpeed * deltaTime);
+		}
+		//for centering camera on a mesh
+		if (glfwGetKey(gameDisplay->window, GLFW_KEY_1) == GLFW_PRESS)
+		{
+			camera.CenterCameraOnMesh(*spaceship.GetTransform().GetPosition(), -5);
+		}
+		if (glfwGetKey(gameDisplay->window, GLFW_KEY_2) == GLFW_PRESS)
+		{
+			camera.PointCameraAtMesh(*spaceship.GetTransform().GetPosition());
+		}
 	}
 
 	//camera mouse input
@@ -378,21 +375,53 @@ void Game::ProcessUserInputs()
 
 void Game::UpdateDisplay()
 {
-	fbo.BindFBO();
-	gameDisplay->ClearDisplay(0.0f, 0.0f, 0.0f, 1.0f); //clear the display
+	//glDrawBuffer(GL_FRAMEBUFFER);
 
-	if (camera.GetMode())
+	gameDisplay->ClearDisplay(0.0f, 0.0f, 0.0f, 1.0f); //clear the display
+	displayFBO.BindFBO();
+
+	DrawDisplay();
+
+	//glEnableClientState(GL_COLOR_ARRAY);
+	//glEnd();
+	fboshader.UseShader();
+	displayFBO.UnbindFBO();
+	displayFBO.RenderFBOtoQuad();
+	//gameDisplay->ChangeBuffer(); //swap the buffers
+}
+
+void Game::UpdateMinimap()
+{
+	minimapFBO.BindFBO();
+
+	DrawMinimap();
+
+	//glEnableClientState(GL_COLOR_ARRAY);
+	//glEnd();
+
+	fbograyscaleshader.UseShader();
+	minimapFBO.UnbindFBO();
+	minimapFBO.RenderFBOtoQuad();
+	gameDisplay->ChangeBuffer(); //swap the buffers
+}
+
+void Game::DrawDisplay()
+{
+	if (cameraLock)
 	{
-		camera.CenterCameraOnMesh(*spaceship.GetTransform().GetPosition(), -10);
-	}
-	else
-	{
-		camera.CenterCameraBehindMesh(*spaceship.GetTransform().GetPosition(), -10);
+		if (camera.GetMode())
+		{
+			camera.CenterCameraOnMesh(*spaceship.GetTransform().GetPosition(), -10);
+		}
+		else
+		{
+			camera.CenterCameraBehindMesh(*spaceship.GetTransform().GetPosition(), -10);
+		}
 	}
 
 	//shader.UseShader();
 	toonrimshader.UseShader();
-	LinkToonRimShaderData();
+	LinkToonRimShaderData(camera);
 
 	//SPACESHIP
 	textures.UseTexture(0);
@@ -416,16 +445,36 @@ void Game::UpdateDisplay()
 	}
 
 	DisplaySkybox();
+}
 
-	counter += 0.001f;
+void Game::DrawMinimap()
+{
+	//shader.UseShader();
+	toonrimshader.UseShader();
+	LinkToonRimShaderData(minimapCamera);
 
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnd();
+	//SPACESHIP
+	textures.UseTexture(0);
+	toonrimshader.UpdateTransform(spaceship.GetTransform(), minimapCamera);
+	spaceship.SetTransformParameters(*spaceship.GetTransform().GetPosition(), glm::vec3(-90.0, 0.0, sinf(counter) / 3), glm::vec3(0.25, 0.25, 0.25)); //wobble effect
+	spaceship.DisplayMesh();
 
-	fbo.UnbindFBO();
-	fboshader.UseShader();
-	fbo.RenderFBOtoQuad();
-	gameDisplay->ChangeBuffer(); //swap the buffers
+	//BULLET
+	textures.UseTexture(1);
+	toonrimshader.UpdateTransform(bullet.GetTransform(), minimapCamera);
+	bullet.SetTransformParameters(*bullet.GetTransform().GetPosition() + glm::vec3(0, 5, 0) * deltaTime, *bullet.GetTransform().GetRotation(), glm::vec3(0.05, 0.05, 0.05));
+	bullet.DisplayMesh();
+
+	//ASTEROIDS
+	textures.UseTexture(2);
+	for (int i = 0; i < sizeof(asteroids) / sizeof(GameObject); i++) //TODO: make loop count backwards for increased performance
+	{
+		toonrimshader.UpdateTransform(asteroids[i].GetTransform(), minimapCamera);
+		asteroids[i].SetTransformParameters(*asteroids[i].GetTransform().GetPosition(), glm::vec3(counter, counter, counter), glm::vec3(0.001, 0.001, 0.001)); //TODO: use deltatime instead of counter?
+		asteroids[i].DisplayMesh();
+	}
+
+	DisplaySkybox();
 }
 
 bool Game::DetectCollision(glm::vec3 position1, float radius1, glm::vec3 position2, float radius2)

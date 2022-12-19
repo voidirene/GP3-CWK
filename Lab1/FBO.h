@@ -10,6 +10,7 @@ public:
 	void BindFBO();
 	void UnbindFBO();
 	void RenderFBOtoQuad();
+	void GenerateFullQuad();
 	void GenerateQuad();
 
 private:

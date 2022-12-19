@@ -30,6 +30,9 @@ private:
 	void ProcessUserInputs(); //This function takes in and processes the user's inputs
 	void GameLoop(); //This function runs the game loop; no game loop means the game ends
 	void UpdateDisplay(); //This function updates the game's display
+	void UpdateMinimap(); //This function is specifically for the (FB0) minimap
+	void DrawDisplay();
+	void DrawMinimap();
 	void UpdateDelta();
 
 	bool DetectCollision(glm::vec3 position1, float radius1, glm::vec3 position2, float radius2);
@@ -37,7 +40,7 @@ private:
 	void LinkFogShaderData();
 	void LinkToonShaderData();
 	void LinkRimLightingShaderData();
-	void LinkToonRimShaderData();
+	void LinkToonRimShaderData(Camera camera);
 	void LinkGeoShaderData();
 	void LinkReflectionShaderData();
 	void LinkADSShaderData();
@@ -51,7 +54,9 @@ private:
 	GameObject asteroids[8];
 	GameObject spaceship;
 	Camera camera;
-	FBO fbo;
+	Camera minimapCamera;
+	FBO displayFBO;
+	FBO minimapFBO;
 
 	Texturing textures;
 	Shading shader;
@@ -74,6 +79,8 @@ private:
 
 	float cameraSpeed = 5;
 	float meshSpeed = 10;
+
+	bool cameraLock = true;
 
 	float counter;
 
