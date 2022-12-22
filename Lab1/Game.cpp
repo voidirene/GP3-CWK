@@ -341,13 +341,21 @@ void Game::ProcessUserInputs()
 		{
 			camera.MoveCameraHorizontally(-cameraSpeed * deltaTime);
 		}
+		//for centering camera on a mesh
+		if (glfwGetKey(gameDisplay->window, GLFW_KEY_1) == GLFW_PRESS)
+		{
+			camera.CenterCameraOnMesh(*spaceship.GetTransform().GetPosition(), -5);
+		}
+		if (glfwGetKey(gameDisplay->window, GLFW_KEY_2) == GLFW_PRESS)
+		{
+			camera.PointCameraAtMesh(*spaceship.GetTransform().GetPosition());
+		}
 		//for rotating camera around a mesh
-		//TODO: setup multiple mesh support
-		if (glfwGetKey(gameDisplay->window, GLFW_KEY_E) == GLFW_PRESS)
+		if (glfwGetKey(gameDisplay->window, GLFW_KEY_3) == GLFW_PRESS)
 		{
 			camera.RotateCameraAroundMesh(*spaceship.GetTransform().GetPosition(), cameraSpeed * deltaTime);
 		}
-		if (glfwGetKey(gameDisplay->window, GLFW_KEY_Q) == GLFW_PRESS)
+		if (glfwGetKey(gameDisplay->window, GLFW_KEY_4) == GLFW_PRESS)
 		{
 			camera.RotateCameraAroundMesh(*spaceship.GetTransform().GetPosition(), -cameraSpeed * deltaTime);
 		}
@@ -359,15 +367,6 @@ void Game::ProcessUserInputs()
 		if (glfwGetKey(gameDisplay->window, GLFW_KEY_MINUS) == GLFW_PRESS)
 		{
 			camera.ZoomCamera(-cameraSpeed * deltaTime);
-		}
-		//for centering camera on a mesh
-		if (glfwGetKey(gameDisplay->window, GLFW_KEY_1) == GLFW_PRESS)
-		{
-			camera.CenterCameraOnMesh(*spaceship.GetTransform().GetPosition(), -5);
-		}
-		if (glfwGetKey(gameDisplay->window, GLFW_KEY_2) == GLFW_PRESS)
-		{
-			camera.PointCameraAtMesh(*spaceship.GetTransform().GetPosition());
 		}
 	}
 
