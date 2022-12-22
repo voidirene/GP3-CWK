@@ -51,7 +51,7 @@ void Game::InitializeSystems()
 
 	spaceship.LoadModel("..\\res\\spaceship.obj"); //loads a mesh from file
 	spaceship.SetTransformParameters(glm::vec3(0, 0, 0), glm::vec3(-90.0, 0.0, 0.0), glm::vec3(0.2, 0.2, 0.2)); //initialize spaceship position
-	bullet.LoadModel("..\\res\\bullet.obj");
+	laser.LoadModel("..\\res\\bullet.obj");
 	for (int i = 0; i < sizeof(asteroids) / sizeof(GameObject); i++) //TODO: make loop count backwards for increased performance
 	{
 		asteroids[i].LoadModel("..\\res\\asteroid.obj");
@@ -59,7 +59,8 @@ void Game::InitializeSystems()
 		//initialize position of each asteroid
 		float randomX = rand() % 11 + (-5); //random integer between -5 and 5
 		float randomY = rand() % 11 + (-5);
-		asteroids[i].SetTransformParameters(glm::vec3(randomX, randomY, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.001, 0.001, 0.001));
+		float randomZ = rand() % 11 + (-5);
+		asteroids[i].SetTransformParameters(glm::vec3(randomX, randomY, randomZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.001, 0.001, 0.001));
 	}
 
 	shader.InitializeShader("..\\res\\shader"); //create a new shader
@@ -200,13 +201,13 @@ void Game::LinkToonShaderData()
 void Game::LinkRimLightingShaderData()
 {
 	rimshader.setVec3("lightDir", glm::vec3(0, 0, 3));
-	rimshader.setMat4("m", bullet.GetModelMatrix());
+	rimshader.setMat4("m", laser.GetModelMatrix());
 }
 
 void Game::LinkToonRimShaderData(Camera camera)
 {
 	toonrimshader.setVec3("lightDir", camera.GetPosition());
-	toonrimshader.setMat4("m", bullet.GetModelMatrix()); //TODO: ...bullet?
+	toonrimshader.setMat4("m", laser.GetModelMatrix()); //TODO: ...bullet?
 }
 
 void Game::LinkGeoShaderData()
@@ -232,7 +233,7 @@ void Game::LinkADSShaderData()
 {
 	adsshader.setMat4("view", camera.GetView());
 	adsshader.setMat4("projection", camera.GetProjection());
-	adsshader.setMat4("model", bullet.GetModelMatrix());
+	adsshader.setMat4("model", laser.GetModelMatrix());
 	adsshader.setVec3("lightPos", 0.5f, 2.0f, -3.0f);
 	adsshader.setVec3("viewPos", camera.GetPosition());
 	adsshader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
@@ -254,17 +255,25 @@ void Game::GameLoop()
 	{
 		audio.PlayBackgroundMusic();
 		ProcessUserInputs();
-		//UpdateMinimap();
 		UpdateDisplay();
 		UpdateMinimap();
+		gameDisplay->ChangeBuffer(); //swap the buffers
 
 		for (int i = 0; i < sizeof(asteroids) / sizeof(GameObject); i++) //TODO: make loop count backwards for increased performance
 		{
-			if (DetectCollision(asteroids[i].boundingSphere.GetPosition(), asteroids[i].boundingSphere.GetRadius(), bullet.boundingSphere.GetPosition(), bullet.boundingSphere.GetRadius()))
+			if (DetectCollision(asteroids[i].boundingSphere.GetPosition(), asteroids[i].boundingSphere.GetRadius(), laser.boundingSphere.GetPosition(), laser.boundingSphere.GetRadius()))
 			{
 				audio.PlaySound(1); //plays a sound if sound isn't already playing
 				asteroids[i].SetActive(false);
 				break;
+			}
+
+			if (DetectCollision(asteroids[i].boundingSphere.GetPosition(), asteroids[i].boundingSphere.GetRadius(), spaceship.boundingSphere.GetPosition(), spaceship.boundingSphere.GetRadius()))
+			{
+				asteroids[i].SetActive(false);
+				spaceship.SetActive(false);
+				Exit("\n   -> GAME OVER! Spaceship collided with an asteroid. <-\n");
+				return;
 			}
 		}
 
@@ -303,10 +312,18 @@ void Game::ProcessUserInputs()
 	{
 		spaceship.SetTransformParameters(*spaceship.GetTransform().GetPosition() + glm::vec3(-5, 0, 0) * deltaTime, *spaceship.GetTransform().GetRotation(), *spaceship.GetTransform().GetScale());
 	}
+	if (glfwGetKey(gameDisplay->window, GLFW_KEY_Q) == GLFW_PRESS)
+	{
+		spaceship.SetTransformParameters(*spaceship.GetTransform().GetPosition() + glm::vec3(0, 0, 5) * deltaTime, *spaceship.GetTransform().GetRotation(), *spaceship.GetTransform().GetScale());
+	}
+	if (glfwGetKey(gameDisplay->window, GLFW_KEY_E) == GLFW_PRESS)
+	{
+		spaceship.SetTransformParameters(*spaceship.GetTransform().GetPosition() + glm::vec3(0, 0, -5) * deltaTime, *spaceship.GetTransform().GetRotation(), *spaceship.GetTransform().GetScale());
+	}
 	//for spaceship firing
 	if (glfwGetKey(gameDisplay->window, GLFW_KEY_F) == GLFW_PRESS)
 	{
-		bullet.SetTransformParameters(*spaceship.GetTransform().GetPosition() + glm::vec3(0, 5, 0) * deltaTime, *bullet.GetTransform().GetRotation(), glm::vec3(0.05, 0.05, 0.05));
+		laser.SetTransformParameters(*spaceship.GetTransform().GetPosition() + glm::vec3(0, 5, 0) * deltaTime, *laser.GetTransform().GetRotation(), glm::vec3(0.05, 0.05, 0.05));
 		audio.PlaySound(0); //plays a sound if sound isn't already playing
 	}
 
@@ -375,19 +392,17 @@ void Game::ProcessUserInputs()
 
 void Game::UpdateDisplay()
 {
-	//glDrawBuffer(GL_FRAMEBUFFER);
-
 	gameDisplay->ClearDisplay(0.0f, 0.0f, 0.0f, 1.0f); //clear the display
 	displayFBO.BindFBO();
 
 	DrawDisplay();
 
-	//glEnableClientState(GL_COLOR_ARRAY);
-	//glEnd();
+	glEnableClientState(GL_COLOR_ARRAY);
+	glEnd();
+
 	fboshader.UseShader();
 	displayFBO.UnbindFBO();
 	displayFBO.RenderFBOtoQuad();
-	//gameDisplay->ChangeBuffer(); //swap the buffers
 }
 
 void Game::UpdateMinimap()
@@ -396,13 +411,12 @@ void Game::UpdateMinimap()
 
 	DrawMinimap();
 
-	//glEnableClientState(GL_COLOR_ARRAY);
-	//glEnd();
+	glEnableClientState(GL_COLOR_ARRAY);
+	glEnd();
 
 	fbograyscaleshader.UseShader();
 	minimapFBO.UnbindFBO();
 	minimapFBO.RenderFBOtoQuad();
-	gameDisplay->ChangeBuffer(); //swap the buffers
 }
 
 void Game::DrawDisplay()
@@ -419,7 +433,6 @@ void Game::DrawDisplay()
 		}
 	}
 
-	//shader.UseShader();
 	toonrimshader.UseShader();
 	LinkToonRimShaderData(camera);
 
@@ -431,9 +444,9 @@ void Game::DrawDisplay()
 
 	//BULLET
 	textures.UseTexture(1);
-	toonrimshader.UpdateTransform(bullet.GetTransform(), camera);
-	bullet.SetTransformParameters(*bullet.GetTransform().GetPosition() + glm::vec3(0, 5, 0) * deltaTime, *bullet.GetTransform().GetRotation(), glm::vec3(0.05, 0.05, 0.05));
-	bullet.DisplayMesh();
+	toonrimshader.UpdateTransform(laser.GetTransform(), camera);
+	laser.SetTransformParameters(*laser.GetTransform().GetPosition() + glm::vec3(0, 5, 0) * deltaTime, *laser.GetTransform().GetRotation(), glm::vec3(0.05, 0.05, 0.05));
+	laser.DisplayMesh();
 
 	//ASTEROIDS
 	textures.UseTexture(2);
@@ -461,9 +474,9 @@ void Game::DrawMinimap()
 
 	//BULLET
 	textures.UseTexture(1);
-	toonrimshader.UpdateTransform(bullet.GetTransform(), minimapCamera);
-	bullet.SetTransformParameters(*bullet.GetTransform().GetPosition() + glm::vec3(0, 5, 0) * deltaTime, *bullet.GetTransform().GetRotation(), glm::vec3(0.05, 0.05, 0.05));
-	bullet.DisplayMesh();
+	toonrimshader.UpdateTransform(laser.GetTransform(), minimapCamera);
+	laser.SetTransformParameters(*laser.GetTransform().GetPosition() + glm::vec3(0, 5, 0) * deltaTime, *laser.GetTransform().GetRotation(), glm::vec3(0.05, 0.05, 0.05));
+	laser.DisplayMesh();
 
 	//ASTEROIDS
 	textures.UseTexture(2);
