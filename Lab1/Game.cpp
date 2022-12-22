@@ -7,21 +7,6 @@ Game::Game() : cubemapTexture(0), skyboxVAO(0), skyboxVBO(0)
 	gameState = GameState::PLAYING; //set the game state to PLAYING
 	gameDisplay = new ScreenDisplay(); //create a new display
 
-	//construct shaders
-	//Shading shader();
-	//Shading fogshader();
-	//Shading toonshader();
-	//Shading rimshader();
-	//Shading toonrimshader();
-	//Shading geoshader();
-	//Shading reflectionshader();
-	//Shading adsshader();
-	//Shading shaderSkybox();
-
-	//construct other gameobjects
-	//GameObject monkey();
-	//Audio* audioDevice();
-
 	counter = 0;
 }
 
@@ -207,7 +192,7 @@ void Game::LinkRimLightingShaderData()
 void Game::LinkToonRimShaderData(Camera camera)
 {
 	toonrimshader.setVec3("lightDir", camera.GetPosition());
-	toonrimshader.setMat4("m", laser.GetModelMatrix()); //TODO: ...bullet?
+	toonrimshader.setMat4("m", laser.GetModelMatrix()); //TODO: ...laser?
 }
 
 void Game::LinkGeoShaderData()
