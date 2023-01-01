@@ -29,8 +29,7 @@ private:
 	void InitializeSystems(); //This function initializes the game's systems
 	void ProcessUserInputs(); //This function takes in and processes the user's inputs
 	void GameLoop(); //This function runs the game loop; no game loop means the game ends
-	void UpdateDisplay(); //This function updates the game's display
-	void UpdateMinimap(); //This function is specifically for the (FB0) minimap
+	void UpdateScreen(); //This function updates the game's display
 	void DrawDisplay();
 	void DrawMinimap();
 	void UpdateDelta();

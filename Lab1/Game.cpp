@@ -240,10 +240,9 @@ void Game::GameLoop()
 	{
 		audio.PlayBackgroundMusic();
 		ProcessUserInputs();
-		UpdateDisplay();
-		UpdateMinimap();
-		gameDisplay->ChangeBuffer(); //swap the buffers
+		UpdateScreen();
 
+		//collision detection
 		for (int i = 0; i < sizeof(asteroids) / sizeof(GameObject); i++) //TODO: make loop count backwards for increased performance
 		{
 			if (DetectCollision(asteroids[i].boundingSphere.GetPosition(), asteroids[i].boundingSphere.GetRadius(), laser.boundingSphere.GetPosition(), laser.boundingSphere.GetRadius()))
@@ -322,7 +321,7 @@ void Game::ProcessUserInputs()
 		cameraLock = !cameraLock;
 	}
 
-	//for keyboard camera movement
+	//for free camera movement
 	if (!cameraLock)
 	{
 		if (glfwGetKey(gameDisplay->window, GLFW_KEY_UP) == GLFW_PRESS)
@@ -374,33 +373,31 @@ void Game::ProcessUserInputs()
 	camera.MouseControls(gameDisplay);
 }
 
-void Game::UpdateDisplay()
+void Game::UpdateScreen()
 {
 	gameDisplay->ClearDisplay(0.0f, 0.0f, 0.0f, 1.0f); //clear the display
+
+
+	//MAIN VIEW FBO
 	displayFBO.BindFBO();
 
 	DrawDisplay();
-
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnd();
-
 	fboshader.UseShader();
+
 	displayFBO.UnbindFBO();
 	displayFBO.RenderFBOtoQuad();
-}
 
-void Game::UpdateMinimap()
-{
+	//MINIMAP FBO
 	minimapFBO.BindFBO();
 
 	DrawMinimap();
-
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnd();
-
 	fbograyscaleshader.UseShader();
+
 	minimapFBO.UnbindFBO();
 	minimapFBO.RenderFBOtoQuad();
+
+
+	gameDisplay->ChangeBuffer(); //swap the buffers
 }
 
 void Game::DrawDisplay()
@@ -423,7 +420,7 @@ void Game::DrawDisplay()
 	//SPACESHIP
 	textures.UseTexture(0);
 	toonrimshader.UpdateTransform(spaceship.GetTransform(), camera);
-	spaceship.SetTransformParameters(*spaceship.GetTransform().GetPosition(), glm::vec3(-90.0, 0.0, sinf(counter) / 3), glm::vec3(0.25, 0.25, 0.25)); //wobble effect
+	spaceship.SetTransformParameters(*spaceship.GetTransform().GetPosition(), glm::vec3(-90.0, 0.0, 5 * sinf(deltaTime)), glm::vec3(0.25, 0.25, 0.25)); //wobble effect
 	spaceship.DisplayMesh();
 
 	//BULLET
@@ -453,7 +450,7 @@ void Game::DrawMinimap()
 	//SPACESHIP
 	textures.UseTexture(0);
 	toonrimshader.UpdateTransform(spaceship.GetTransform(), minimapCamera);
-	spaceship.SetTransformParameters(*spaceship.GetTransform().GetPosition(), glm::vec3(-90.0, 0.0, sinf(counter) / 3), glm::vec3(0.25, 0.25, 0.25)); //wobble effect
+	spaceship.SetTransformParameters(*spaceship.GetTransform().GetPosition(), glm::vec3(-90.0, 0.0, 5 * sinf(deltaTime)), glm::vec3(0.25, 0.25, 0.25)); //wobble effect
 	spaceship.DisplayMesh();
 
 	//BULLET

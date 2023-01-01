@@ -8,6 +8,4 @@ C:\Projects\GP3-CWK\Lab1\Game.cpp(71,46): warning C4244: 'argument': conversion 
 C:\Projects\GP3-CWK\Lab1\Game.cpp(73,72): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
 C:\Projects\GP3-CWK\Lab1\Game.cpp(73,46): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
 C:\Projects\GP3-CWK\Lab1\Game.cpp(233,31): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-  Main.cpp
-  Generating Code...
   Lab1.vcxproj -> C:\Projects\GP3-CWK\Debug\Labs.exe
