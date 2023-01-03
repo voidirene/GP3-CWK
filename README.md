@@ -6,4 +6,5 @@ Camera can be controlled by using the arrow keys for movement, and the plus and 
 The models are using the exploding geometry, reflection and modified ADS (Phong lighting) shaders.
 
 Video demo was too large for GitHub, so it is available at this link: https://youtu.be/Qge5AF0uA_U
+
 Document explaining the code is in the project files, titled 'Code Documentation - Anna Irene Margaritis.docx'.
