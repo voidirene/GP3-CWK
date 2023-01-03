@@ -1,7 +1,5 @@
 #include "Game.h"
 
-//unsigned int indices[] = { 0, 1, 2 };
-
 Game::Game() : cubemapTexture(0), skyboxVAO(0), skyboxVBO(0)
 {
 	gameState = GameState::PLAYING; //set the game state to PLAYING
@@ -169,8 +167,6 @@ void Game::DisplaySkybox()
 	glDepthFunc(GL_LESS); // set depth function back to default
 }
 
-//TODO: setup multiple mesh support (RimLight, RimShade, Reflect, ADS)
-//TODO: combine these methods?
 void Game::LinkFogShaderData()
 {
 	fogshader.setVec3("fogColor", glm::vec3(0.2, 0.2, 0.2));
@@ -420,7 +416,7 @@ void Game::DrawDisplay()
 	//SPACESHIP
 	textures.UseTexture(0);
 	toonrimshader.UpdateTransform(spaceship.GetTransform(), camera);
-	spaceship.SetTransformParameters(*spaceship.GetTransform().GetPosition(), glm::vec3(-90.0, 0.0, 5 * sinf(deltaTime)), glm::vec3(0.25, 0.25, 0.25)); //wobble effect
+	spaceship.SetTransformParameters(*spaceship.GetTransform().GetPosition(), glm::vec3(-90.0, 0.0, sinf(counter) / 3), glm::vec3(0.25, 0.25, 0.25)); //wobble effect
 	spaceship.DisplayMesh();
 
 	//BULLET
@@ -450,7 +446,7 @@ void Game::DrawMinimap()
 	//SPACESHIP
 	textures.UseTexture(0);
 	toonrimshader.UpdateTransform(spaceship.GetTransform(), minimapCamera);
-	spaceship.SetTransformParameters(*spaceship.GetTransform().GetPosition(), glm::vec3(-90.0, 0.0, 5 * sinf(deltaTime)), glm::vec3(0.25, 0.25, 0.25)); //wobble effect
+	spaceship.SetTransformParameters(*spaceship.GetTransform().GetPosition(), glm::vec3(-90.0, 0.0, sinf(counter) / 3), glm::vec3(0.25, 0.25, 0.25)); //wobble effect
 	spaceship.DisplayMesh();
 
 	//BULLET
